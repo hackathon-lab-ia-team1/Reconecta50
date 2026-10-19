@@ -6,15 +6,13 @@ O foco que recomendo para o MVP é ajudar uma pessoa a contar sua experiência p
 
 Este documento relaciona a proposta aos critérios informados e indica as evidências que a equipe deve preparar. As ações recomendadas ainda precisam ser implementadas ou validadas.
 
-| Critério | Peso informado | O que o Reconecta precisa demonstrar |
-| --- | --- | --- |
-| Relevância e impacto social | 25% | Como a solução pode favorecer a inclusão profissional e a diversidade etária, com evidências de autonomia e avanço nas candidaturas. |
-| Uso consciente da IA | 25% | Que a IA tem uma função útil, preserva os fatos e opera com consumo e custo acompanhados. |
-| Inovação e criatividade | 20% | Que a aplicação da IA oferece uma experiência adequada ao problema e uma vantagem específica a validar. |
-| Viabilidade técnica e usabilidade | 20% | Que o fluxo funciona do início ao fim e pode ser usado pelo público escolhido. |
-| Apresentação: PPT/PDF e pitch | A confirmar | Que a equipe explica a proposta com clareza e sustenta os argumentos com demonstração e evidências. |
-
-**Os percentuais informados somam 90%.** Se a avaliação totalizar 100%, os 10% restantes poderiam corresponder à apresentação, mas isso precisa ser confirmado no regulamento.
+| Critério                          | Peso informado | O que o Reconecta precisa demonstrar                                                                                                 |
+| --------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Relevância e impacto social       | 25%            | Como a solução pode favorecer a inclusão profissional e a diversidade etária, com evidências de autonomia e avanço nas candidaturas. |
+| Uso consciente da IA              | 25%            | Que a IA tem uma função útil, preserva os fatos e opera com consumo e custo acompanhados.                                            |
+| Inovação e criatividade           | 20%            | Que a aplicação da IA oferece uma experiência adequada ao problema e uma vantagem específica a validar.                              |
+| Viabilidade técnica e usabilidade | 20%            | Que o fluxo funciona do início ao fim e pode ser usado pelo público escolhido.                                                       |
+| Apresentação: PPT/PDF e pitch     | A confirmar    | Que a equipe explica a proposta com clareza e sustenta os argumentos com demonstração e evidências.                                  |
 
 ## 1. Relevância e impacto social: 25%
 
@@ -121,18 +119,18 @@ Se a demonstração incluir vagas, as oportunidades reais precisam ter fonte, li
 
 Para viabilizar um piloto público, também será necessário limitar chamadas à IA e definir quem mantém o serviço, atende dúvidas e revisa as oportunidades. Essas atividades devem caber na capacidade da equipe.
 
-## 5. Apresentação: qualidade do PPT/PDF e do pitch
+## 5. Apresentação: qualidade do PPT/PDF e do pitch - 10%
 
 A apresentação deve permitir que a banca acompanhe o problema, veja a solução em uso e entenda os resultados disponíveis. Eu organizaria o material em seis partes, ajustando a duração às regras do evento:
 
-| Parte | Conteúdo sugerido |
-| --- | --- |
-| Problema e público | Quem a equipe pretende atender e qual dificuldade foi observada. Usar relatos ou dados com fonte. |
-| Recorte do MVP | A tarefa que o produto ajuda a concluir e por que ela foi priorizada. |
-| Demonstração | Mostrar o percurso do relato até a revisão e o currículo para download, conforme o que estiver funcionando. |
-| Papel da IA | Explicar o que ela transforma, como os fatos são conferidos e qual foi o consumo medido. |
-| Evidências | Apresentar o que foi observado com participantes, incluindo limitações e dificuldades. |
-| Continuidade | Mostrar o próximo experimento, como obter oportunidades reais e quem poderia sustentar a operação. |
+| Parte              | Conteúdo sugerido                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Problema e público | Quem a equipe pretende atender e qual dificuldade foi observada. Usar relatos ou dados com fonte.           |
+| Recorte do MVP     | A tarefa que o produto ajuda a concluir e por que ela foi priorizada.                                       |
+| Demonstração       | Mostrar o percurso do relato até a revisão e o currículo para download, conforme o que estiver funcionando. |
+| Papel da IA        | Explicar o que ela transforma, como os fatos são conferidos e qual foi o consumo medido.                    |
+| Evidências         | Apresentar o que foi observado com participantes, incluindo limitações e dificuldades.                      |
+| Continuidade       | Mostrar o próximo experimento, como obter oportunidades reais e quem poderia sustentar a operação.          |
 
 No PPT/PDF, eu usaria pouco texto, capturas legíveis do protótipo e gráficos apenas quando houver dados medidos. Um resultado esperado deve estar identificado como hipótese ou meta. A versão em PDF precisa fazer sentido mesmo sem a explicação oral.
 
@@ -150,4 +148,4 @@ Relevância social e uso consciente da IA representam, juntos, 50% dos pesos inf
 
 Antes do evento, a equipe deve conseguir responder com evidências: quem utilizou, o que conseguiu concluir, onde precisou de ajuda, o que a IA acrescentou à tarefa e quanto custou entregar esse resultado.
 
-*Documento de orientação de mentoria, elaborado em 19/10/2026 a partir dos critérios informados, da [proposta do Reconecta](../ideias/Reconecta.md), do [backend](../ReconectaBackend/src/server.ts) e do [serviço de geração de currículo](../ReconectaBackend/src/services/geminiService.ts). Complementa a [sugestão inicial de MVP](Sugestao-MVP-Reconecta50.md). Não atribui uma nota ao projeto nem comprova execução, custo ou impacto ainda não medidos.*
+_Documento de orientação de mentoria, elaborado em 19/10/2026 a partir dos critérios informados, da [proposta do Reconecta](../ideias/Reconecta.md), do [backend](../ReconectaBackend/src/server.ts) e do [serviço de geração de currículo](../ReconectaBackend/src/services/geminiService.ts). Complementa a [sugestão inicial de MVP](Sugestao-MVP-Reconecta50.md). Não atribui uma nota ao projeto nem comprova execução, custo ou impacto ainda não medidos._
