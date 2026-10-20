@@ -1,0 +1,52 @@
+.form {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .form fieldset {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  .form fieldset > div {
+    min-width: 0;
+    margin-top: 0;
+  }
+
+  .form label {
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .form input {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    scroll-margin-block: 24px;
+  }
+
+  /* O seletor de data nativo pode impor uma largura mínima no Safari. */
+  .form input[type='date'] {
+    min-inline-size: 0;
+    text-align: start;
+  }
+
+  .form p {
+    overflow-wrap: anywhere;
+  }
+
+  .form button[type='submit'] {
+    width: 100%;
+    white-space: normal;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 360px) {
+  .form input {
+    /* Rótulos e dicas continuam completos mesmo quando o exemplo não cabe. */
+    text-overflow: ellipsis;
+  }
+}

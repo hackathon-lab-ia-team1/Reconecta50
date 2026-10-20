@@ -1,0 +1,70 @@
+.share-control {
+  position: relative;
+  max-width: 100%;
+}
+
+.share-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  white-space: normal;
+  text-align: left;
+  color: var(--white);
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.share-feedback {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 5;
+  width: min(290px, 80vw);
+  padding: 16px;
+  border: 1px solid #cfd8ce;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px #173f3320;
+  font-size: .875rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  background: var(--white);
+  color: var(--forest);
+  border-color: var(--border);
+}
+
+.share-feedback textarea {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 10px;
+  border: 1px solid #cfd8ce;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  background: var(--white);
+  color: var(--forest);
+  border-color: var(--border);
+}
+
+@media (max-width: 480px) {
+  .share-control {
+    width: 100%;
+  }
+  .share-button {
+    width: 100%;
+    justify-content: center;
+  }
+  .share-feedback {
+    position: static;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+.share-button:hover:not(:disabled) {
+  color: var(--white);
+  background: var(--forest);
+}
