@@ -28,7 +28,11 @@ test('aceita data válida em ano bissexto', () => {
 
 test('valida nome, telefone, CPF, endereço e senha independentemente', () => {
   const errors = validateRegistration({ ...valid, fullName: 'Maria', phone: '123', cpf: '', address: ' ', password: 'curta' }, today);
-  for (const field of ['fullName', 'phone', 'cpf', 'address', 'password']) assert.ok(errors[field]);
+  assert.ok(errors.fullName);
+  assert.ok(errors.phone);
+  assert.ok(errors.cpf);
+  assert.ok(errors.address);
+  assert.ok(errors.password);
 });
 
 test('aceita CPF sem pontuação e rejeita dígitos inválidos ou repetidos', () => {

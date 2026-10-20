@@ -93,6 +93,18 @@ describe('Preferência de fonte', () => {
     render(<App />);
     expect(document.documentElement.style.fontSize).toBe('130%');
   });
+
+  it('navega pela logo sem substituir o documento', () => {
+    window.history.replaceState({}, '', '/cadastro');
+    render(<App />);
+    const documentElement = document.documentElement;
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+    fireEvent(screen.getByRole('link', { name: 'Reconecta 50+, início' }), click);
+    expect(click.defaultPrevented).toBe(true);
+    expect(window.location.pathname).toBe('/login');
+    expect(document.documentElement).toBe(documentElement);
+    expect(screen.getByRole('heading', { name: 'Vamos nos reconectar?' })).toBeTruthy();
+  });
 });
 
 describe('Formulários reutilizáveis', () => {
