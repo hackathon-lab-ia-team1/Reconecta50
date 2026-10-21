@@ -1,42 +1,10 @@
 import { GoogleGenAI } from '@google/genai';
+import type { FormularioCurriculo, CurriculoEstruturado, RespostaCurriculo } from '../types/curriculo.types.js';
 
-export interface FormularioCurriculo {
-  usuario?: {
-    nome?: string;
-    email?: string;
-    telefone?: string;
-  };
-  historico?: {
-    ultimaExperiencia?: {
-      periodo?: string;
-      cargo?: string;
-      atividadesTextoOuAudio?: string;
-    };
-    outrasHabilidades?: string;
-    preferenciaTrabalho?: string;
-  };
-}
+// Re-exporta os tipos para backwards compatibility
+export type { FormularioCurriculo, CurriculoEstruturado, RespostaCurriculo };
 
-export interface CurriculoEstruturado {
-  nome: string;
-  resumoProfissional: string;
-  competenciasChave: string[];
-  experienciaFormatada: Array<{
-    cargo: string;
-    periodo: string;
-    responsabilidades: string[];
-  }>;
-  mensagemApoio: string;
-}
-
-export interface RespostaCurriculo {
-  sucesso: boolean;
-  origem: 'gemini_api' | 'mock_desenvolvimento';
-  curriculo: CurriculoEstruturado;
-  aviso?: string;
-}
-
-// [MOCK] Retorno simulado quando a chave do Gemini não for fornecida ou falhar
+// ─── MOCK: Retorno simulado quando a chave do Gemini não está configurada ───
 function gerarCurriculoMock(dados?: FormularioCurriculo): RespostaCurriculo {
   const nome = dados?.usuario?.nome || 'Profissional Reconecta';
   const cargoInformado = dados?.historico?.ultimaExperiencia?.cargo || 'Atendimento ao Cliente';
@@ -74,46 +42,50 @@ export async function gerarCurriculoComIA(dadosFormulario: FormularioCurriculo):
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey || apiKey.trim() === '' || apiKey.includes('sua_chave')) {
-    // [MOCK] Executando fallback por ausência de chave
+    // Fallback por ausência de chave
     return gerarCurriculoMock(dadosFormulario);
   }
 
   try {
     const ai = new GoogleGenAI({ apiKey });
 
+    // ─── PROMPT FIEL AO RELATO (Feedback do Mentor) ───
+    // O prompt é estritamente fiel ao relato da pessoa, sem alucinar ou inventar
+    // competências/cargos que o usuário não mencionou.
     const prompt = `
-Você é um especialista em recrutamento, recolocação profissional e combate ao etarismo no mercado de trabalho.
-Sua missão é transformar o relato informal e simples de uma pessoa com mais de 50 anos (50+) em um currículo profissional valorizado, bem estruturado e moderno.
+Você é um especialista em recrutamento e recolocação profissional para pessoas com mais de 50 anos.
+Sua tarefa é organizar o relato informal do candidato em um currículo profissional bem estruturado.
+
+REGRAS OBRIGATÓRIAS:
+1. Use SOMENTE as informações que o candidato forneceu. NÃO invente cargos, competências, períodos ou responsabilidades.
+2. Se o candidato não mencionou uma habilidade, NÃO a inclua.
+3. Reformule o relato informal em linguagem profissional, mas mantenha o conteúdo fiel ao original.
+4. Destaque a maturidade e experiência de vida como pontos positivos, sem exagerar.
+5. Se algum campo estiver vazio ou incompleto, use "Não informado" em vez de inventar.
 
 Dados fornecidos pelo candidato:
 ${JSON.stringify(dadosFormulario, null, 2)}
 
-Instruções obrigatórias:
-1. Extraia o nome e dados principais. Se não informados, utilize títulos genéricos profissionais.
-2. Destaque a maturidade, responsabilidade e estabilidade emocional no resumo.
-3. Transforme o relato informal de atividades em tópicos formais e de impacto.
-4. Responda ESTRITAMENTE em formato JSON com o seguinte formato, sem texto antes ou depois:
+Responda ESTRITAMENTE no formato JSON abaixo, sem texto antes ou depois:
 
 {
-  "nome": "Nome do Candidato",
-  "resumoProfissional": "Síntese de 2 a 3 frases valorizando a maturidade e habilidades",
+  "nome": "Nome conforme informado pelo candidato",
+  "resumoProfissional": "Síntese de 2 a 3 frases baseada EXCLUSIVAMENTE no que foi relatado",
   "competenciasChave": [
-    "Competência 1",
-    "Competência 2",
-    "Competência 3",
-    "Competência 4"
+    "Competência mencionada ou claramente implícita no relato 1",
+    "Competência mencionada ou claramente implícita no relato 2",
+    "Competência mencionada ou claramente implícita no relato 3"
   ],
   "experienciaFormatada": [
     {
-      "cargo": "Cargo / Função",
-      "periodo": "Período informado",
+      "cargo": "Cargo conforme informado",
+      "periodo": "Período conforme informado ou 'Não informado'",
       "responsabilidades": [
-        "Ação realizada com impacto",
-        "Rotina operacional ou atendimento"
+        "Atividade relatada pelo candidato, reformulada em linguagem profissional"
       ]
     }
   ],
-  "mensagemApoio": "Uma mensagem curta e motivadora em tom respeitoso e acolhedor"
+  "mensagemApoio": "Uma mensagem curta motivadora em tom respeitoso e acolhedor"
 }
 `;
 
@@ -134,7 +106,8 @@ Instruções obrigatórias:
       curriculo: jsonCurriculo
     };
   } catch (error) {
-    // [MOCK] Fallback acionado por erro na API
+    // Fallback acionado por erro na API
+    console.error('[geminiService] Erro ao consultar Gemini:', error);
     const mock = gerarCurriculoMock(dadosFormulario);
     mock.aviso = 'Falha ao consultar a IA real. Exibindo currículo simulado offline.';
     return mock;
