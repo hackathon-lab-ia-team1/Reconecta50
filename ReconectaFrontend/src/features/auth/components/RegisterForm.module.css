@@ -26,8 +26,6 @@
     max-width: 100%;
     scroll-margin-block: 24px;
   }
-
-  /* O seletor de data nativo pode impor uma largura mínima no Safari. */
   .form input[type='date'] {
     min-inline-size: 0;
     text-align: start;
@@ -46,7 +44,6 @@
 
 @media (max-width: 360px) {
   .form input {
-    /* Rótulos e dicas continuam completos mesmo quando o exemplo não cabe. */
     text-overflow: ellipsis;
   }
 }

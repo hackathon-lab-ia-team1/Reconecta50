@@ -1,0 +1,42 @@
+.field {
+  margin-top: 22px;
+}
+.field label {
+  display: block;
+  font-size: 0.87rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  display: block;
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--forest);
+  resize: vertical;
+  font-size: max(16px, 0.9rem);
+  line-height: 1.7;
+}
+.field p {
+  font-size: 0.75rem;
+  color: var(--teal);
+  margin-top: 8px;
+  line-height: 1.7;
+}
+.field .error {
+  color: #a7332d;
+}
+.field textarea[aria-invalid='true'] {
+  border-color: #af3b35;
+}
+@media (max-width: 960px) {
+  .field label {
+    font-size: 1rem;
+  }
+  .field p {
+    font-size: 0.85rem;
+  }
+}

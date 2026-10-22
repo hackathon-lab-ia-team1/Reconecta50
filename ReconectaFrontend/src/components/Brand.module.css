@@ -3,7 +3,7 @@
   align-items: center;
   gap: 11px;
   text-decoration: none;
-  font-family: Manrope,sans-serif;
+  font-family: Manrope, sans-serif;
   font-size: 1.5rem;
   letter-spacing: -1px;
   font-weight: 750;
@@ -30,14 +30,14 @@
 
 .brand small {
   display: block;
-  font-size: .53rem;
+  font-size: 0.53rem;
   letter-spacing: 2.1px;
   margin-top: 4px;
   font-weight: 700;
   color: var(--forest);
 }
 
-@media (max-width:760px) {
+@media (max-width: 760px) {
   .brand {
     font-size: 1.3rem;
   }

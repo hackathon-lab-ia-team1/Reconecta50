@@ -1,0 +1,113 @@
+.assistant {
+  background: #edf2e9;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 30px;
+  margin-bottom: 28px;
+}
+.heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.heading > div {
+  min-width: 0;
+}
+.icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  color: var(--green);
+  background: white;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+.heading h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.assistant p {
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--teal);
+}
+.guidance {
+  margin: 22px 0;
+  padding: 18px;
+  background: #ffffff99;
+  border-radius: 10px;
+}
+.guidance strong {
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.modes,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+.modes button[aria-pressed='true'] {
+  border-color: var(--green);
+  background: var(--green);
+  color: white;
+}
+.modes button[aria-pressed='true']:hover:not(:disabled) {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: white;
+}
+.recorder {
+  padding-block: 4px;
+}
+.recorder audio {
+  display: block;
+  width: min(100%, 500px);
+  margin-top: 16px;
+}
+.assistant .notice {
+  font-size: 0.75rem;
+  margin-top: 22px;
+}
+.assistant .error {
+  padding: 14px;
+  border: 1px solid #c7a07f;
+  border-radius: 9px;
+  background: #fff6eb;
+  color: #794b17;
+  margin-top: 20px;
+}
+@media (max-width: 600px) {
+  .assistant {
+    padding: 24px 18px;
+  }
+  .heading {
+    flex-direction: column;
+  }
+  .modes > *,
+  .actions > * {
+    width: 100%;
+  }
+  .assistant p {
+    font-size: 0.9rem;
+  }
+  .assistant .notice {
+    font-size: 0.8rem;
+  }
+}
+.interviewStep {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin-top: 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.interviewStep audio {
+  display: block;
+  width: 100%;
+  margin: 16px 0;
+}

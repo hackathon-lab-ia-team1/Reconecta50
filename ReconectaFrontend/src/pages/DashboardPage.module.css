@@ -1,0 +1,266 @@
+.pageHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 8px 0 30px;
+}
+.eyebrow {
+  color: var(--olive);
+  font-size: 0.65rem;
+  letter-spacing: 1.6px;
+  font-weight: 700;
+}
+.pageHeading h1 {
+  font-family: Manrope, sans-serif;
+  font-size: clamp(1.5rem, 2.7vw, 2rem);
+  letter-spacing: -1px;
+  line-height: 1.3;
+  margin: 10px 0;
+}
+.pageHeading p {
+  color: var(--teal);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.welcomeTag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  font-size: 0.7rem;
+  color: var(--green);
+  background: white;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr);
+  align-items: center;
+  gap: 40px;
+  background: linear-gradient(115deg, var(--forest), var(--teal) 65%, var(--blue));
+  color: white;
+  padding: 40px 44px;
+  border-radius: 22px;
+  overflow: hidden;
+}
+.heroLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.62rem;
+  letter-spacing: 1.4px;
+  line-height: 1.7;
+}
+.hero h2 {
+  font-family: Manrope, sans-serif;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  letter-spacing: -0.9px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 18px 0;
+}
+.hero p {
+  font-size: 0.85rem;
+  line-height: 1.8;
+  margin-bottom: 24px;
+  max-width: 550px;
+}
+.illustration {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+.resumePaper {
+  width: 240px;
+  min-height: 285px;
+  background: #f8faf6;
+  padding: 26px;
+  border-radius: 14px;
+  color: var(--forest);
+  box-shadow: 12px 14px 0 #ffffff12;
+  transform: rotate(5deg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.paperIcon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  background: #e6eee2;
+  border-radius: 50%;
+}
+.paperTitle {
+  font-family: Manrope, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.paperLine {
+  display: block;
+  height: 5px;
+  border-radius: 4px;
+  background: #dfe6dc;
+  width: 100%;
+}
+.paperLine:nth-of-type(even) {
+  width: 75%;
+}
+.paperSection {
+  font-size: 0.55rem;
+  line-height: 1.7;
+  font-weight: 600;
+  margin-top: 12px;
+}
+.paperBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #edf2e5;
+  color: var(--olive);
+  padding: 10px;
+  border: 1px solid #dce5d0;
+  border-radius: 8px;
+  font-size: 0.52rem;
+  margin-top: 4px;
+}
+.section {
+  margin-top: 36px;
+}
+.sectionHeading {
+  margin-bottom: 20px;
+}
+.sectionHeading h2,
+.nextSteps h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: -0.4px;
+  margin: 0 0 10px;
+}
+.sectionHeading p,
+.nextSteps p {
+  color: var(--teal);
+  line-height: 1.8;
+  font-size: 0.8rem;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.nextSteps {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.2fr);
+  gap: 44px;
+  background: #edf2e9;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  margin-top: 32px;
+  padding: 32px;
+}
+.nextSteps h2 {
+  margin-top: 14px;
+}
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #d4ddce;
+}
+.steps li:last-child {
+  border-bottom: 0;
+}
+.stepNumber {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid #d4ddce;
+  font-size: 0.75rem;
+}
+.done {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+.steps a {
+  flex: 1;
+  text-decoration: none;
+  min-width: 0;
+  min-height: 44px;
+}
+.steps a:hover strong {
+  text-decoration: underline;
+}
+.steps strong {
+  display: block;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.steps a span {
+  display: block;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  color: var(--teal);
+  margin-top: 4px;
+}
+@media (max-width: 960px) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 32px;
+  }
+  .illustration {
+    display: none;
+  }
+  .nextSteps {
+    gap: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .hero {
+    padding: 28px 22px;
+    border-radius: 16px;
+  }
+  .hero h2 {
+    font-size: 1.5rem;
+  }
+  .hero p,
+  .pageHeading p {
+    font-size: 0.9rem;
+  }
+  .heroLabel {
+    font-size: 0.7rem;
+  }
+  .nextSteps {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 24px 20px;
+  }
+  .steps strong {
+    font-size: 0.9rem;
+  }
+  .steps a span {
+    font-size: 0.8rem;
+  }
+  .sectionHeading p,
+  .nextSteps p {
+    font-size: 0.85rem;
+  }
+  .welcomeTag {
+    font-size: 0.8rem;
+  }
+}
