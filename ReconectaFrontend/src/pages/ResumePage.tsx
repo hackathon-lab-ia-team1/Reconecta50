@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { FilePenLine, Printer } from 'lucide-react';
+import { Download, FilePenLine } from 'lucide-react';
 import { Button } from '../components/Button';
 import { FormField } from '../components/FormField';
 import { TextAreaField } from '../components/TextAreaField';
@@ -22,6 +22,9 @@ export function ResumePage() {
   const formRef = useRef<HTMLFormElement>(null);
   const [manualOpen, setManualOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState('');
+  const exportPending = useRef(false);
   const hasUnsavedChanges = JSON.stringify(normalizeResume(draft)) !== JSON.stringify(resume);
 
   useEffect(() => {
@@ -47,9 +50,22 @@ export function ResumePage() {
       return;
     }
     updateResume(normalizeResume(draft));
-    setMessage(
-      'Prévia atualizada. Você pode imprimir ou escolher Salvar como PDF na janela de impressão.',
-    );
+    setMessage('Prévia atualizada. Você já pode baixar seu currículo em PDF.');
+  }
+  async function exportPdf() {
+    if (exportPending.current || generating || hasUnsavedChanges) return;
+    exportPending.current = true;
+    setExporting(true);
+    setExportError('');
+    try {
+      const { downloadResumePdf } = await import('../features/career/services/resumePdfService');
+      await downloadResumePdf({ ...profile }, { ...resume });
+    } catch {
+      setExportError('Não foi possível baixar o PDF. Tente novamente.');
+    } finally {
+      exportPending.current = false;
+      setExporting(false);
+    }
   }
   return (
     <>
@@ -68,6 +84,8 @@ export function ResumePage() {
       )}
       <div className={styles.noPrint}>
         <ResumeAssistant
+          guidedAudio
+          audioGenerationAvailable={!!import.meta.env.VITE_RESUME_AUDIO_GENERATE_URL}
           onGenerate={generateResume}
           onPendingChange={setGenerating}
           manualAction={
@@ -109,6 +127,32 @@ export function ResumePage() {
           <form ref={formRef} onSubmit={submit} noValidate aria-busy={generating}>
             <fieldset className={styles.resumeFields} disabled={generating}>
               <legend className={styles.visuallyHidden}>Dados do currículo</legend>
+              <FormField
+                label="Função que você procura (opcional)"
+                name="targetRole"
+                value={draft.targetRole ?? ''}
+                onChange={(event) => update('targetRole', event.target.value)}
+              />
+              <TextAreaField
+                label="Formação e cursos (opcional)"
+                name="education"
+                value={draft.education ?? ''}
+                onChange={(event) => update('education', event.target.value)}
+              />
+              <TextAreaField
+                label="Idiomas (opcional)"
+                name="languages"
+                value={draft.languages ?? ''}
+                onChange={(event) => update('languages', event.target.value)}
+              />
+              <TextAreaField
+                label="Outros meios de contato (opcional)"
+                name="additionalContacts"
+                hint="Ex.: LinkedIn ou portfólio."
+                value={draft.additionalContacts ?? ''}
+                onChange={(event) => update('additionalContacts', event.target.value)}
+              />
+
               <TextAreaField
                 label="Apresentação profissional"
                 name="summary"
@@ -172,13 +216,21 @@ export function ResumePage() {
       <div className={`${styles.printActions} ${styles.noPrint}`}>
         <Button
           variant="secondary"
-          onClick={() => window.print()}
-          disabled={generating || hasUnsavedChanges || !resume.summary || !profile.fullName}
+          onClick={() => void exportPdf()}
+          aria-busy={exporting}
+          disabled={
+            exporting || generating || hasUnsavedChanges || !resume.summary || !profile.fullName
+          }
         >
-          <Printer size={19} aria-hidden="true" />
-          Imprimir / salvar em PDF
+          <Download size={19} aria-hidden="true" />
+          {exporting ? 'Gerando PDF…' : 'Baixar currículo em PDF'}
         </Button>
       </div>
+      {exportError && (
+        <p role="alert" className={styles.noPrint}>
+          {exportError}
+        </p>
+      )}
       {hasUnsavedChanges && !generating && (
         <p className={`${styles.feedback} ${styles.noPrint}`}>
           Atualize o currículo para incluir suas alterações no PDF.

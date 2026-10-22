@@ -3,6 +3,7 @@ export interface CareerProfile {
   phone: string;
   birthDate: string;
   address: string;
+  email?: string;
 }
 
 export interface ResumeDraft {
@@ -12,4 +13,8 @@ export interface ResumeDraft {
   period: string;
   activities: string;
   skills: string;
+  targetRole?: string;
+  education?: string;
+  languages?: string;
+  additionalContacts?: string;
 }

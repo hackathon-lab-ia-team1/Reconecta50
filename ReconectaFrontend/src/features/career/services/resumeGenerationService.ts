@@ -2,15 +2,23 @@ import type { GenerateResume } from '../types/resumeGeneration';
 import { parseResumeResponse } from '../utils/parseResumeResponse';
 
 export const generateResume: GenerateResume = async (input, signal) => {
-  const endpoint = import.meta.env.VITE_RESUME_GENERATE_URL;
+  const endpoint =
+    input.source === 'audio'
+      ? import.meta.env.VITE_RESUME_AUDIO_GENERATE_URL
+      : import.meta.env.VITE_RESUME_GENERATE_URL;
+  if (input.source === 'audio' && !endpoint)
+    throw new Error(
+      'O serviço atual não recebe gravações de áudio. Conte sua experiência por texto ou preencha o currículo manualmente. Nenhum áudio foi enviado.',
+    );
   if (!endpoint) {
     throw new Error(
       'A criação com IA ainda não está conectada. Você pode gravar para conhecer o recurso ou preencher o currículo manualmente abaixo. Nenhum áudio ou texto foi enviado.',
     );
   }
-  const body = new FormData();
-  body.set('source', input.source);
+  let body: FormData | string;
   if (input.source === 'audio') {
+    body = new FormData();
+    body.set('source', input.source);
     if (!input.audio.size || !input.audio.type.startsWith('audio/')) {
       throw new Error('Use uma gravação de áudio válida ou conte sua experiência por texto.');
     }
@@ -26,7 +34,7 @@ export const generateResume: GenerateResume = async (input, signal) => {
     const text = input.text.trim();
     if (!text || text.length > 12000)
       throw new Error('Conte sua experiência em um texto de até 12.000 caracteres.');
-    body.set('text', text);
+    body = JSON.stringify({ historico: { ultimaExperiencia: { atividadesTextoOuAudio: text } } });
   }
 
   const controller = new AbortController();
@@ -41,6 +49,7 @@ export const generateResume: GenerateResume = async (input, signal) => {
   try {
     const response = await fetch(endpoint, {
       method: 'POST',
+      ...(input.source === 'text' ? { headers: { 'Content-Type': 'application/json' } } : {}),
       body,
       credentials: 'include',
       signal: controller.signal,

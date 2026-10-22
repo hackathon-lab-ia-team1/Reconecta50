@@ -37,7 +37,7 @@ O painel de demonstração fica em `/dashboard`, com navegação para `/perfil`,
 
 `WorkspaceLayout` reúne cabeçalho, navegação, acessibilidade e rodapé para as páginas do painel. A leitura é interrompida ao navegar, o título do documento é atualizado e o foco vai para o título principal. O cabeçalho e a navegação ficam fora da leitura. O layout adapta os cartões e a navegação para telas pequenas.
 
-`CareerProvider` mantém os rascunhos de perfil e currículo somente em memória, sem persistir dados pessoais ou simular uma sessão. O perfil alimenta a prévia do currículo, que pode ser impressa ou salva em PDF usando a janela de impressão do navegador. Essa primeira versão destaca uma experiência profissional. **Minhas vagas** apresenta um estado vazio e orientações: ainda não há busca, envio de candidatura ou acompanhamento conectado à API.
+`CareerProvider` mantém os rascunhos de perfil e currículo somente em memória, sem persistir dados pessoais ou simular uma sessão. O perfil alimenta a prévia do currículo, que pode ser baixada diretamente em PDF A4, com texto selecionável, margens e paginação definidos pelo aplicativo. Essa primeira versão destaca uma experiência profissional. **Minhas vagas** apresenta um estado vazio e orientações: ainda não há busca, envio de candidatura ou acompanhamento conectado à API.
 
 `AuthProvider` incrementa uma versão de sessão a cada login bem-sucedido e logout. `SessionProviders` recria os estados de perfil, currículo e candidaturas nesse limite, inclusive ao entrar em outra conta sem recarregar. Assim, dados da prévia ou da conta anterior não são reaproveitados. A preferência de fonte fica acima desse limite e é preservada.
 
@@ -89,13 +89,24 @@ O arquivo **`.env.example` deve ser versionado**: ele documenta as variáveis e 
 
 ```dotenv
 VITE_AUTH_LOGIN_URL=http://localhost:3000/auth/login
+VITE_AUTH_REGISTER_URL=http://localhost:3000/auth/register
+VITE_AUTH_ME_URL=http://localhost:3000/auth/me
+VITE_AUTH_LOGOUT_URL=http://localhost:3000/auth/logout
 ```
 
 Essa URL é apenas um exemplo: ajuste para o endpoint acordado com o backend. Reinicie o Vite após alterar o ambiente. Variáveis com prefixo `VITE_` ficam acessíveis no navegador; não coloque senhas ou chaves privadas nelas.
 
 ## Integração com o backend
 
-O `authService` envia `POST` para `VITE_AUTH_LOGIN_URL` com JSON `{ "identifier": "...", "password": "..." }` e **`credentials: 'include'`**. CPF ou telefone são normalizados para dígitos. Uma resposta 2xx representa sucesso; 401, 429 e demais erros recebem mensagens próprias.
+Configure os quatro endpoints de autenticação em conjunto, como no exemplo acima. `AuthProvider` consulta `GET VITE_AUTH_ME_URL` com credenciais e sem cache ao iniciar. Enquanto verifica, mostra um estado de carregamento. Uma resposta 401 ou `{ authenticated: false }` encerra a consulta como visitante; uma falha de rede, servidor ou contrato mostra uma ação para tentar novamente. O contrato autenticado é `{ authenticated: true, user: { id, fullName, phone?, birthDate?, address? } }`. O frontend não persiste a autenticação no armazenamento local.
+
+Com login ou consulta de sessão configurados, as rotas do painel redirecionam visitantes para `/login`. O link **Conhecer o painel de demonstração** autoriza explicitamente a prévia nesta navegação, sem sessão de conta; essa escolha não é persistida após recarregar. Sem configuração de autenticação, o painel continua disponível para desenvolvimento. A proteção de rotas no frontend não substitui a autorização dos endpoints no backend.
+
+O cadastro envia `POST VITE_AUTH_REGISTER_URL` com JSON `{ fullName, phone, cpf, birthDate, address, password }`, credenciais e timeout. O backend responde 201 com `{ success: true, user }` e cria o cookie de sessão; a página autentica a pessoa e abre o painel. Conflitos de CPF/telefone (409), validação (400), limite de tentativas (429) e falhas de conexão têm mensagens próprias. Sem endpoint configurado, nenhum dado é enviado e a interface informa a indisponibilidade.
+
+Currículo por áudio, recomendações ranqueadas e os endpoints de preparo/envio de candidaturas continuam sendo contratos futuros; não configure essas variáveis com rotas incompatíveis. O `GET /api/vagas` estático não equivale à recomendação por IA, e o gerador JSON do backend não recebe o upload multipart do frontend. Para o envio de candidaturas futuro, o CORS precisará permitir `Idempotency-Key`. Nenhum arquivo do backend foi modificado nesta integração de autenticação.
+
+O `authService` envia `POST` para `VITE_AUTH_LOGIN_URL` com JSON `{ "identifier": "...", "password": "..." }` e **`credentials: 'include'`**. CPF ou telefone são normalizados para dígitos. O contrato de sucesso é `{ success: true, user: { id, fullName, phone, birthDate, address } }`; respostas 204 sem corpo continuam aceitas para compatibilidade. Erros 401, 429 e demais falhas recebem mensagens próprias.
 
 Para essa estratégia funcionar, o backend precisa:
 
@@ -172,7 +183,7 @@ Após um login bem-sucedido, `useAccountProfile` carrega o perfil da conta com `
 
 Os campos de Meu perfil são montados após o carregamento e começam preenchidos com esses dados. A pessoa pode editar apenas os campos desejados. Enquanto a consulta ocorre, a tela mostra o carregamento; em caso de erro ou endpoint ausente, oferece uma nova tentativa. O perfil carregado é mantido em memória entre as páginas, sem repetir a consulta nem sobrescrever as edições a cada navegação. Sair cancela a consulta e descarta respostas atrasadas. O painel de demonstração não consulta dados de conta.
 
-Configure `VITE_PROFILE_URL` em `.env.local` quando o endpoint estiver disponível. O carregamento não implementa atualização no servidor: o botão Atualizar meu perfil ainda altera somente a prévia em memória. O serviço de salvamento e a restauração da sessão após recarregar continuam pendentes de integração.
+Configure `VITE_PROFILE_URL` em `.env.local` quando o endpoint estiver disponível. O carregamento não implementa atualização no servidor: o botão Atualizar meu perfil ainda altera somente a prévia em memória. O serviço de salvamento continua pendente de integração. Sem `VITE_PROFILE_URL`, o perfil usa os dados de `user` devolvidos pelo login, cadastro ou `/auth/me`; campos opcionais ausentes permanecem vazios. Não configure um endpoint de perfil inexistente.
 
 A senha é alterada por um formulário independente (`ChangePasswordForm`), que recebe `onChangePassword({ currentPassword, newPassword })`. A confirmação é validada somente na interface. Nenhuma senha faz parte de `CareerProfile` ou é persistida no navegador. A implementação de demonstração informa que a operação está indisponível, sem simular sucesso; a chamada HTTP depende da futura integração com o backend.
 
@@ -239,45 +250,34 @@ A sugestão de e-mail recebida da IA é editável, com assunto e destinatário v
 
 ## Currículo por voz e IA
 
-Em Meu currículo, `ResumeAssistant` oferece gravação de áudio, reprodução antes do envio e alternativa por texto. `useAudioRecorder` usa `getUserMedia` e `MediaRecorder`, com detecção de suporte, gravação sem limite de duração ou tamanho imposto pelo frontend, descarte, liberação do microfone ao parar/sair da página e revogação das URLs temporárias. Em produção, a captura exige HTTPS e permissão de microfone; localhost pode ser usado no desenvolvimento. Consulte [getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) e [MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder).
+A opção **Falar minha experiência** oferece seis etapas em `ResumeVoiceInterview`: função desejada, formação/cursos, idiomas, experiências, habilidades e contatos adicionais. As cinco primeiras etapas têm gravação e reprodução próprias e um campo para revisar a transcrição. O passo 6 contém somente um campo para digitar ou colar links, como LinkedIn e portfólio, sem gravação ou transcrição. `useSpeechTranscription` usa `SpeechRecognition`/`webkitSpeechRecognition` em pt-BR, mantém resultados finais sem duplicação e trata permissões, interrupções e desmontagem. Só uma etapa pode gravar de cada vez; durante a geração os textos ficam bloqueados. Não há limite de duração imposto pelo frontend. O envio reúne os textos revisados, com identificação das etapas, no JSON já aceito pelo backend, respeitando o limite total de 12.000 caracteres sem cortar conteúdo silenciosamente.
 
-O frontend **não faz transcrição nem chama um provedor de IA diretamente**. Configure `VITE_RESUME_GENERATE_URL` com um endpoint do seu backend. Sem configuração, a interface informa a indisponibilidade sem enviar dados ou inventar um resultado. A chave de IA fica exclusivamente no servidor.
+A transcrição ocorre durante a fala pelo serviço do navegador, que pode processar o áudio remotamente e exigir internet. Essa informação aparece antes de gravar. Não é upload do arquivo para a rota JSON e não é transcrição offline garantida. Sem suporte a voz, todos os campos continuam disponíveis para digitação. Gravar novamente acrescenta texto ao relato existente; cada etapa mantém a gravação mais recente para ouvir. Ao sair, microfone, reconhecimento e URLs temporárias são liberados.
 
-Contrato proposto para integrar com o backend:
+Objetivo, formação/cursos, idiomas e contatos adicionais são preservados com os textos revisados, aparecem no editor manual, na prévia e no PDF. Experiências múltiplas devolvidas pelo backend são reunidas com seus cargos, períodos e atividades, sem descartar entradas. O e-mail opcional em **Meu perfil** é validado, pode ser carregado de `user.email` ou `profile.email` se o backend o fornecer e aparece no currículo e no PDF. A edição de perfil, incluindo e-mail, continua em memória: o backend atual ainda não tem um endpoint para salvá-la na conta.
 
-```text
-POST VITE_RESUME_GENERATE_URL
-credentials: include
-Content-Type: multipart/form-data (boundary definido pelo navegador)
+O botão **Baixar currículo em PDF** gera o documento diretamente no frontend com jsPDF, carregado somente ao exportar. O arquivo tem formato A4, texto selecionável, fonte de 12 pontos no corpo, margens fixas, quebra de linhas e paginação automática, sem depender de `window.print()`. Inclui nome, telefone e os campos profissionais da prévia; endereço completo e data de nascimento não são exportados. Alterações manuais precisam ser aplicadas à prévia antes de baixar. Falhas na geração mostram uma mensagem e permitem tentar novamente. O arquivo baixado pode ser aberto e impresso em um leitor de PDF.
 
-source: audio | text
-audio: arquivo de áudio, quando source=audio
-text: relato em texto, quando source=text
-```
+Configure `VITE_RESUME_GENERATE_URL=http://localhost:3000/api/curriculo/gerar`. O frontend envia `POST` com credenciais, `Content-Type: application/json` e `{ historico: { ultimaExperiencia: { atividadesTextoOuAudio: "relato" } } }`, sem anexar automaticamente dados pessoais do perfil.
 
-O pedido envia apenas a gravação ou o relato, sem anexar automaticamente nome, telefone, data de nascimento ou endereço. O servidor precisa validar tamanho/formato, aceitar os formatos negociados pelo navegador (como WebM/Opus, MP4 ou Ogg/Opus), transcrever o áudio quando necessário e organizar o relato com IA. Não deve inventar qualificações, empresas ou datas; informações não fornecidas devem permanecer vazias. Defina no backend a política de tratamento e retenção dos áudios.
+A resposta atual `{ sucesso: true, origem: 'gemini_api', curriculo: { resumoProfissional, competenciasChave, experienciaFormatada: [{ cargo, periodo, responsabilidades }] } }` é adaptada aos campos do editor. Empresa permanece vazia porque o contrato não a informa. O contrato legado `{ resume: { summary, role, company, period, activities, skills } }` permanece aceito. Experiências múltiplas são reunidas com seus cargos, períodos e responsabilidades no editor, preservando o conteúdo. Respostas `mock_desenvolvimento` não substituem o currículo nem são apresentadas como IA real.
 
-Resposta JSON esperada:
+Após sucesso, o currículo é atualizado automaticamente em memória e pode ser revisado manualmente. Cancelamento, falhas e respostas inválidas preservam o currículo anterior. O serviço trata 401/413/429 e timeout de 60 segundos. Persistir o currículo na conta exige um endpoint de salvamento.
 
-```json
-{
-  "resume": {
-    "summary": "Apresentação profissional baseada no relato",
-    "role": "Função informada",
-    "company": "",
-    "period": "",
-    "activities": "Atividades descritas pela pessoa",
-    "skills": "Organização, atendimento"
-  }
-}
-```
+O backend atual recebe JSON, sem upload ou transcrição de áudio. Por isso, a página começa na opção de texto. Ainda é possível gravar e ouvir o relato como apoio, sem limite de tempo imposto pelo frontend, e as etapas por voz usam transcrição do navegador para enviar somente texto à rota JSON. Nenhum arquivo é enviado a essa rota. O frontend não chama um provedor de IA nem armazena sua chave.
 
-Os seis campos são strings; `summary` e `role` precisam estar preenchidos. O serviço valida a resposta, trata falhas de conexão, 401/413/429, cancelamento e timeout de 60 segundos. Quando a geração termina com sucesso, `ResumeAssistant` chama `onGenerated` e a página atualiza automaticamente os campos e o currículo em `CareerProvider`, liberando seu uso nas recomendações sem confirmação ou atualização manual da prévia. A edição manual é aberta para revisão. Falhas ou solicitações canceladas não substituem o currículo anterior. Esse salvamento é apenas em memória durante a navegação; persistir na conta e recuperar após recarregar dependem de integração com o backend. O modelo atual destaca uma experiência, assim como o editor manual. Para múltiplas experiências, o contrato e o editor deverão evoluir juntos.
+`VITE_RESUME_AUDIO_GENERATE_URL` é reservado para uma futura integração de upload/transcrição: deixe vazio com o backend atual. Somente esse endpoint recebe multipart com `source=audio` e `audio=arquivo`, mantendo o contrato de resposta validado. Captura de áudio exige permissão e HTTPS ou localhost; o microfone e as URLs temporárias são liberados ao sair.
 
-O backend ainda precisa implementar esse endpoint, autenticação/permissões, CORS com credenciais e o processamento de IA. Nenhum arquivo do backend é alterado por esse recurso.
+## Vagas e candidaturas com o backend atual
+
+Configure `VITE_JOBS_URL=http://localhost:3000/api/vagas` para consultar por GET o contrato `{ sucesso: true, total, vagas: [{ id, titulo, empresa, modelo, localizacao, descricao, requisitos, beneficios }] }`. Os mocks do backend são mostrados em uma seção separada como vagas de demonstração, sem inventar salário, contato ou compatibilidade por IA e sem oferecer candidatura a dados fictícios.
+
+Deixe `VITE_JOB_RECOMMENDATIONS_URL`, `VITE_JOB_APPLICATION_PLAN_URL` e `VITE_JOB_APPLICATION_SUBMIT_URL` vazios: os endpoints correspondentes ainda não existem. Recomendações por IA, geração de mensagens pela IA e envio automático não são simulados. Para futuras vagas reais com um canal declarado, o fluxo manual já permite inscrição no site ou cópia de mensagens de e-mail/WhatsApp, sem envio automático.
+
+Sem endpoint de envio configurado, nenhuma chamada com `Idempotency-Key` é feita. Quando a integração automática existir, o backend precisará autorizar esse cabeçalho no CORS e implementar a idempotência. Isso não pode ser corrigido no frontend. Nenhum arquivo do backend foi alterado.
 
 ## Hospedagem
 
 Publique o conteúdo de `dist/` e configure o servidor de arquivos para retornar `index.html` nas rotas da aplicação. Isso permite abrir ou atualizar diretamente `/cadastro` e `/login`. O frontend não altera a configuração do backend.
 
-O botão **Sair** aparece no cabeçalho somente após um login bem-sucedido, inclusive no celular. O painel de demonstração não exibe essa ação. O estado de autenticação fica em memória nesta navegação; restaurar uma sessão após recarregar depende da futura consulta de sessão ao backend. Configure `VITE_AUTH_LOGOUT_URL` com o endpoint POST de logout. A chamada inclui `credentials: 'include'`: o backend deve invalidar a sessão e expirar o cookie HttpOnly, com CORS permitindo credenciais. Respostas 2xx e 401 encerram a navegação e limpam os rascunhos em memória. Em caso de falha, a interface mantém os dados e permite tentar novamente. As preferências de acessibilidade são preservadas.
+O botão **Sair** aparece no cabeçalho somente após um login bem-sucedido, inclusive no celular. O painel de demonstração não exibe essa ação. Ao iniciar o aplicativo, `VITE_AUTH_ME_URL` restaura a sessão pelo cookie HttpOnly. Configure `VITE_AUTH_LOGOUT_URL` com o endpoint POST de logout. A chamada inclui `credentials: 'include'`: o backend deve invalidar a sessão e expirar o cookie HttpOnly, com CORS permitindo credenciais. Respostas 2xx e 401 encerram a navegação e limpam os rascunhos em memória. Em caso de falha, a interface mantém os dados e permite tentar novamente. As preferências de acessibilidade são preservadas.

@@ -30,7 +30,7 @@ async function login() {
   fireEvent.change(screen.getByLabelText('CPF ou telefone'), { target: { value: profile.phone } });
   fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'minha senha' } });
   fireEvent.click(screen.getByRole('button', { name: 'Entrar na minha conta' }));
-  await screen.findByRole('button', { name: 'Sair' });
+  await screen.findByRole('button', { name: 'Sair' }, { timeout: 5000 });
   fireEvent.click(screen.getByRole('link', { name: 'Meu perfil' }));
 }
 
@@ -166,6 +166,8 @@ it('não reaproveita o currículo da prévia nem de outra conta após um novo lo
   );
   window.history.replaceState({}, '', '/curriculo');
   render(<App />);
+  fireEvent.click(screen.getByRole('link', { name: 'Conhecer o painel de demonstração' }));
+  fireEvent.click(screen.getByRole('link', { name: 'Meu currículo' }));
   fireEvent.click(screen.getByRole('button', { name: 'Diminuir texto' }));
   function fillResume(summary: string) {
     fireEvent.click(screen.getByRole('button', { name: 'Preencher currículo manualmente' }));

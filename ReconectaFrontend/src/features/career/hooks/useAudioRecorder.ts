@@ -134,6 +134,7 @@ export function useAudioRecorder() {
         () => setDuration(Math.floor((performance.now() - startedAt) / 1000)),
         1000,
       );
+      return true;
     } catch (cause) {
       if (runRef.current !== run) return;
       release();
@@ -144,6 +145,7 @@ export function useAudioRecorder() {
           : 'Não foi possível acessar o microfone. Confira se ele está disponível ou use a opção de texto.',
       );
       setStatus('idle');
+      return false;
     }
   }
 

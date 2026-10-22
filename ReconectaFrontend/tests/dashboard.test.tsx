@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { App } from '../src/app/App';
+import { downloadResumePdf } from '../src/features/career/services/resumePdfService';
+
+vi.mock('../src/features/career/services/resumePdfService', () => ({
+  downloadResumePdf: vi.fn().mockResolvedValue(undefined),
+}));
 
 beforeEach(() => {
   localStorage.clear();
@@ -44,7 +49,7 @@ describe('Dashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com IA' }));
     expect((summary.closest('fieldset') as HTMLFieldSetElement).disabled).toBe(true);
     expect(
-      screen.getByRole('button', { name: 'Imprimir / salvar em PDF' }).hasAttribute('disabled'),
+      screen.getByRole('button', { name: 'Baixar currículo em PDF' }).hasAttribute('disabled'),
     ).toBe(true);
     fireEvent.change(summary, { target: { value: 'Alteração durante a geração.' } });
     expect(summary.value).toBe('Meu rascunho manual.');
@@ -151,7 +156,7 @@ describe('Dashboard', () => {
     expect(screen.getByText('Informe uma função ou trabalho.')).toBeTruthy();
     expect(document.activeElement).toBe(screen.getByLabelText('Apresentação profissional'));
     expect(
-      screen.getByRole('button', { name: 'Imprimir / salvar em PDF' }).hasAttribute('disabled'),
+      screen.getByRole('button', { name: 'Baixar currículo em PDF' }).hasAttribute('disabled'),
     ).toBe(true);
   });
 
@@ -182,7 +187,7 @@ describe('Dashboard', () => {
     }
   });
 
-  it('mantém perfil e currículo durante a navegação, sem gravar dados pessoais no armazenamento local', () => {
+  it('mantém perfil e currículo durante a navegação, sem gravar dados pessoais no armazenamento local', async () => {
     render(<App />);
     navigate('Meu perfil');
     fireEvent.change(screen.getByLabelText('Nome completo'), { target: { value: 'Ana Souza' } });
@@ -208,21 +213,36 @@ describe('Dashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Atualizar prévia do currículo' }));
     expect(screen.getByRole('heading', { name: 'Ana Souza' })).toBeTruthy();
     expect(
-      screen.getByRole('button', { name: 'Imprimir / salvar em PDF' }).hasAttribute('disabled'),
+      screen.getByRole('button', { name: 'Baixar currículo em PDF' }).hasAttribute('disabled'),
     ).toBe(false);
     fireEvent.change(screen.getByLabelText('Apresentação profissional'), {
       target: { value: 'Resumo profissional revisado.' },
     });
     expect(
-      screen.getByRole('button', { name: 'Imprimir / salvar em PDF' }).hasAttribute('disabled'),
+      screen.getByRole('button', { name: 'Baixar currículo em PDF' }).hasAttribute('disabled'),
     ).toBe(true);
     expect(
       screen.getByText('Atualize o currículo para incluir suas alterações no PDF.'),
     ).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Atualizar prévia do currículo' }));
     expect(
-      screen.getByRole('button', { name: 'Imprimir / salvar em PDF' }).hasAttribute('disabled'),
+      screen.getByRole('button', { name: 'Baixar currículo em PDF' }).hasAttribute('disabled'),
     ).toBe(false);
+    const print = vi.spyOn(window, 'print').mockImplementation(() => {});
+    vi.mocked(downloadResumePdf).mockRejectedValueOnce(new Error('Falha de download'));
+    fireEvent.click(screen.getByRole('button', { name: 'Baixar currículo em PDF' }));
+    await screen.findByText('Não foi possível baixar o PDF. Tente novamente.');
+    fireEvent.click(screen.getByRole('button', { name: 'Baixar currículo em PDF' }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Baixar currículo em PDF' }).hasAttribute('disabled'),
+      ).toBe(false),
+    );
+    expect(downloadResumePdf).toHaveBeenLastCalledWith(
+      expect.objectContaining({ fullName: 'Ana Souza' }),
+      expect.objectContaining({ summary: 'Resumo profissional revisado.' }),
+    );
+    expect(print).not.toHaveBeenCalled();
     navigate('Visão geral');
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Olá, Ana!');
     navigate('Meu currículo');

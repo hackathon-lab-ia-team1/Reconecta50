@@ -34,6 +34,11 @@ export async function getAccountProfile(signal?: AbortSignal): Promise<CareerPro
     }
     if (profile.birthDate && getBirthDateError(profile.birthDate))
       throw new Error('O serviço devolveu uma data de nascimento inválida.');
+    if (source.email !== undefined) {
+      if (typeof source.email !== 'string' || source.email.length > 254)
+        throw new Error('O serviço devolveu um e-mail inválido.');
+      profile.email = source.email;
+    }
     return profile;
   } catch (error) {
     if (signal?.aborted) throw error;

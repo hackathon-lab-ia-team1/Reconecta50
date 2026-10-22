@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../components/Button';
 import { LinkButton } from '../components/LinkButton';
 import { JobCard } from '../features/jobs/components/JobCard';
+import { JobCatalog } from '../features/jobs/components/JobCatalog';
 import { JobApplicationActions } from '../features/jobs/components/JobApplicationActions';
 import { JobFilters } from '../features/jobs/components/JobFilters';
 import type { JobTrackingFilter } from '../features/jobs/types/job';
@@ -52,6 +53,7 @@ export function RecommendedJobsPage() {
           seu currículo.
         </p>
       </header>
+      {import.meta.env.VITE_JOBS_URL && <JobCatalog />}
       {!ready ? (
         <section className={styles.empty} aria-labelledby="resume-needed-title">
           <h2 id="resume-needed-title">Primeiro, deixe seu currículo pronto</h2>

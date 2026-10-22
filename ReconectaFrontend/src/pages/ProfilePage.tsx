@@ -70,6 +70,7 @@ function ProfileEditor() {
       phone: draft.phone.trim(),
       birthDate: draft.birthDate,
       address: draft.address.trim(),
+      email: draft.email?.trim() ?? '',
     });
     setMessage('Perfil atualizado nesta prévia. Seus dados já podem ser usados no currículo.');
   }
@@ -83,6 +84,20 @@ function ProfileEditor() {
         >
           <h2 id="profile-form-title">Como podemos apresentar você?</h2>
           <form ref={formRef} onSubmit={submit} noValidate>
+            <FormField
+              label="E-mail (opcional)"
+              name="email"
+              type="email"
+              autoComplete="email"
+              hint="Será incluído no seu currículo para contato."
+              value={draft.email ?? ''}
+              onChange={(event) => {
+                setDraft((current) => ({ ...current, email: event.target.value }));
+                setErrors((current) => ({ ...current, email: undefined }));
+                setMessage('');
+              }}
+              error={errors.email}
+            />
             <FormField
               label="Nome completo"
               name="fullName"

@@ -7,12 +7,15 @@ import { useAudioRecorder } from '../hooks/useAudioRecorder';
 import type { ResumeDraft } from '../types/career';
 import type { GenerateResume, ResumeGenerationInput } from '../types/resumeGeneration';
 import styles from './ResumeAssistant.module.css';
+import { ResumeVoiceInterview } from './ResumeVoiceInterview';
 
 interface ResumeAssistantProps {
   onGenerate: GenerateResume;
   onGenerated: (resume: ResumeDraft) => void;
   manualAction?: ReactNode;
   onPendingChange?: (pending: boolean) => void;
+  audioGenerationAvailable?: boolean;
+  guidedAudio?: boolean;
 }
 
 export function ResumeAssistant({
@@ -20,13 +23,18 @@ export function ResumeAssistant({
   onGenerated,
   manualAction,
   onPendingChange,
+  audioGenerationAvailable = true,
+  guidedAudio = false,
 }: ResumeAssistantProps) {
   const recording = useAudioRecorder();
-  const [mode, setMode] = useState<'audio' | 'text'>(recording.supported ? 'audio' : 'text');
+  const [mode, setMode] = useState<'audio' | 'text'>(
+    recording.supported && audioGenerationAvailable ? 'audio' : 'text',
+  );
   const [text, setText] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [completed, setCompleted] = useState(false);
+  const [voiceBusy, setVoiceBusy] = useState(false);
   const requestRef = useRef<AbortController | null>(null);
   const recordingBusy = ['requesting', 'recording', 'stopping'].includes(recording.status);
 
@@ -111,7 +119,7 @@ export function ResumeAssistant({
         <Button
           variant="secondary"
           aria-pressed={mode === 'audio'}
-          disabled={pending || recordingBusy}
+          disabled={pending || recordingBusy || voiceBusy}
           onClick={() => {
             setMode('audio');
             setError('');
@@ -123,7 +131,7 @@ export function ResumeAssistant({
         <Button
           variant="secondary"
           aria-pressed={mode === 'text'}
-          disabled={pending || recordingBusy}
+          disabled={pending || recordingBusy || voiceBusy}
           onClick={() => {
             setMode('text');
             setError('');
@@ -133,8 +141,29 @@ export function ResumeAssistant({
           Escrever minha experiência
         </Button>
       </div>
-      {mode === 'audio' ? (
+      {guidedAudio && (
+        <div hidden={mode !== 'audio'}>
+          <ResumeVoiceInterview
+            onGenerate={onGenerate}
+            onGenerated={onGenerated}
+            onBusyChange={setVoiceBusy}
+            onPendingChange={(busy) => {
+              setPending(busy);
+              onPendingChange?.(busy);
+            }}
+            manualAction={manualAction}
+          />
+        </div>
+      )}
+      {mode === 'audio' && guidedAudio ? null : mode === 'audio' ? (
         <div className={styles.recorder}>
+          {!audioGenerationAvailable && (
+            <p>
+              O serviço atual ainda não transforma gravações em currículo. Você pode gravar e ouvir
+              seu relato como apoio, mas para criar o currículo use Escrever minha experiência.
+              Nenhum áudio será enviado.
+            </p>
+          )}
           {!recording.supported ? (
             <p>
               Este navegador não disponibiliza a gravação de áudio. Use a opção Escrever minha
@@ -231,42 +260,49 @@ export function ResumeAssistant({
           disabled={pending}
         />
       )}
-      <p className={styles.notice}>
-        Ao escolher Criar currículo com IA, você envia apenas a gravação ou o texto acima ao serviço
-        de criação de currículo, quando ele estiver disponível. O novo currículo substituirá o atual
-        automaticamente. Confira o resultado e ajuste o que precisar.
-      </p>
-      <div className={styles.actions}>
-        <Button
-          onClick={() => void generate()}
-          disabled={
-            pending || recordingBusy || (mode === 'audio' ? !recording.audio : !text.trim())
-          }
-        >
-          <Sparkles size={19} aria-hidden="true" />
-          {pending ? 'Organizando seu currículo…' : 'Criar currículo com IA'}
-        </Button>
-        {pending && (
-          <Button variant="secondary" onClick={cancelGeneration}>
-            Cancelar criação
-          </Button>
-        )}
-      </div>
-      {manualAction && <div className={styles.actions}>{manualAction}</div>}
-      {pending && (
-        <p role="status">
-          Estamos organizando as informações que você contou. Isso pode levar alguns instantes.
-        </p>
-      )}
-      {error && (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      )}
-      {completed && (
-        <p role="status">
-          Currículo atualizado automaticamente. Você pode revisar e editar os campos abaixo.
-        </p>
+      {!(mode === 'audio' && guidedAudio) && (
+        <>
+          <p className={styles.notice}>
+            Ao escolher Criar currículo com IA, você envia apenas o texto acima ou, quando houver
+            suporte, a gravação ao serviço de criação de currículo, quando ele estiver disponível. O
+            novo currículo substituirá o atual automaticamente. Confira o resultado e ajuste o que
+            precisar.
+          </p>
+          <div className={styles.actions}>
+            <Button
+              onClick={() => void generate()}
+              disabled={
+                pending ||
+                recordingBusy ||
+                (mode === 'audio' ? !audioGenerationAvailable || !recording.audio : !text.trim())
+              }
+            >
+              <Sparkles size={19} aria-hidden="true" />
+              {pending ? 'Organizando seu currículo…' : 'Criar currículo com IA'}
+            </Button>
+            {pending && (
+              <Button variant="secondary" onClick={cancelGeneration}>
+                Cancelar criação
+              </Button>
+            )}
+          </div>
+          {manualAction && <div className={styles.actions}>{manualAction}</div>}
+          {pending && (
+            <p role="status">
+              Estamos organizando as informações que você contou. Isso pode levar alguns instantes.
+            </p>
+          )}
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
+          {completed && (
+            <p role="status">
+              Currículo atualizado automaticamente. Você pode revisar e editar os campos abaixo.
+            </p>
+          )}
+        </>
       )}
     </section>
   );

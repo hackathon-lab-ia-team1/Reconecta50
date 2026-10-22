@@ -129,7 +129,7 @@ describe('Criação assistida de currículo', () => {
     expect(onGenerated).not.toHaveBeenCalled();
   });
 
-  it('envia texto em multipart com credenciais e valida o retorno antes de usar', async () => {
+  it('envia texto em JSON no contrato do backend com credenciais', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue(new Response(JSON.stringify({ resume }), { status: 200 }));
@@ -137,13 +137,14 @@ describe('Criação assistida de currículo', () => {
     expect(await generateResume({ source: 'text', text: 'Minha experiência.' })).toEqual(resume);
     const request = fetchMock.mock.calls[0][1];
     expect(request.credentials).toBe('include');
-    expect(request.body.get('source')).toBe('text');
-    expect(request.body.get('text')).toBe('Minha experiência.');
-    expect(request.headers).toBeUndefined();
-    expect(request.body.get('profile')).toBeNull();
+    expect(JSON.parse(request.body)).toEqual({
+      historico: { ultimaExperiencia: { atividadesTextoOuAudio: 'Minha experiência.' } },
+    });
+    expect(request.headers).toEqual({ 'Content-Type': 'application/json' });
   });
 
   it('envia áudio como arquivo e não coloca dados pessoais no pedido', async () => {
+    vi.stubEnv('VITE_RESUME_AUDIO_GENERATE_URL', 'https://api.example/audio');
     const fetchMock = vi
       .fn()
       .mockResolvedValue(new Response(JSON.stringify({ resume }), { status: 200 }));

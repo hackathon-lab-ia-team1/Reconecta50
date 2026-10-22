@@ -99,3 +99,15 @@
     font-size: 0.8rem;
   }
 }
+.interviewStep {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin-top: 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.interviewStep audio {
+  display: block;
+  width: 100%;
+  margin: 16px 0;
+}

@@ -7,7 +7,7 @@ export type ProfileStatus = 'idle' | 'loading' | 'ready' | 'error';
 const emptyProfile: CareerProfile = { fullName: '', phone: '', birthDate: '', address: '' };
 
 export function useAccountProfile() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [profile, updateProfile] = useState(emptyProfile);
   const [profileStatus, setStatus] = useState<ProfileStatus>('idle');
   const [profileError, setError] = useState('');
@@ -28,7 +28,16 @@ export function useAccountProfile() {
     setStatus('loading');
     setError('');
     try {
-      const loaded = await getAccountProfile(controller.signal);
+      const loaded =
+        !import.meta.env.VITE_PROFILE_URL && user
+          ? {
+              fullName: user.fullName,
+              phone: user.phone ?? '',
+              birthDate: user.birthDate ?? '',
+              address: user.address ?? '',
+              ...(user.email ? { email: user.email } : {}),
+            }
+          : await getAccountProfile(controller.signal);
       if (requestRef.current !== controller || controller.signal.aborted) return;
       updateProfile(loaded);
       setStatus('ready');
@@ -39,7 +48,7 @@ export function useAccountProfile() {
     } finally {
       if (requestRef.current === controller) requestRef.current = null;
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     if (isAuthenticated) {

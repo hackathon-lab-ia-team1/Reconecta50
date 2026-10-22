@@ -13,5 +13,9 @@ export function validateProfile(profile: CareerProfile): ProfileErrors {
     phone: getPhoneError(profile.phone),
     birthDate: getBirthDateError(profile.birthDate),
     address: profile.address.trim() ? undefined : 'Informe seu endereço.',
+    email:
+      profile.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())
+        ? 'Informe um e-mail válido.'
+        : undefined,
   };
 }

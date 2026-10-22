@@ -21,5 +21,11 @@ export function normalizeResume(resume: ResumeDraft): ResumeDraft {
       .map((skill) => skill.trim())
       .filter(Boolean)
       .join(', '),
+    ...(resume.targetRole !== undefined ? { targetRole: resume.targetRole.trim() } : {}),
+    ...(resume.education !== undefined ? { education: resume.education.trim() } : {}),
+    ...(resume.languages !== undefined ? { languages: resume.languages.trim() } : {}),
+    ...(resume.additionalContacts !== undefined
+      ? { additionalContacts: resume.additionalContacts.trim() }
+      : {}),
   };
 }

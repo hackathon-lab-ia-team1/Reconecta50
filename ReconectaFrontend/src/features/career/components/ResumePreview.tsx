@@ -20,7 +20,27 @@ export function ResumePreview({
         <span className={styles.label}>PRÉVIA DO CURRÍCULO</span>
         <h2 id={titleId}>{profile.fullName || 'Seu nome'}</h2>
         {profile.phone && <p>{profile.phone}</p>}
+        {profile.email && <p>{profile.email}</p>}
+        {resume.additionalContacts && <p>{resume.additionalContacts}</p>}
       </header>
+      {resume.targetRole && (
+        <section>
+          <h3>Objetivo profissional</h3>
+          <p>{resume.targetRole}</p>
+        </section>
+      )}
+      {resume.education && (
+        <section>
+          <h3>Formação e cursos</h3>
+          <p>{resume.education}</p>
+        </section>
+      )}
+      {resume.languages && (
+        <section>
+          <h3>Idiomas</h3>
+          <p>{resume.languages}</p>
+        </section>
+      )}
       <section>
         <h3>Apresentação profissional</h3>
         <p>{resume.summary || 'Seu resumo profissional aparecerá aqui.'}</p>
