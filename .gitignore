@@ -27,3 +27,6 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 .claude-flow/
+
+# Dados persistidos do backend (users.json, sessions.json)
+ReconectaBackend/data/

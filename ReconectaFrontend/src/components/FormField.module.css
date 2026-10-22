@@ -1,0 +1,101 @@
+.field {
+  margin-top: 22px;
+}
+
+.field label {
+  display: block;
+  font-size: .87rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cfd8ce;
+  border-radius: 9px;
+  min-height: 56px;
+  padding: 0 15px;
+  gap: 12px;
+  background: var(--white);
+  border-color: var(--border);
+  color: var(--teal);
+}
+
+.input-wrap:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px #2b47661a;
+}
+
+.input-wrap:has([aria-invalid=true]) {
+  border-color: #af3b35;
+}
+
+.input-wrap input {
+  border: 0;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  height: 54px;
+  font-size: .85rem;
+  color: var(--forest);
+}
+
+.input-wrap input:focus-visible {
+  outline: none;
+}
+
+.input-wrap input::placeholder {
+  color: var(--teal);
+}
+
+.password-toggle {
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  min-width: 38px;
+  min-height: 44px;
+  margin-right: -8px;
+  color: var(--teal);
+}
+
+.field-hint {
+  font-size: .73rem;
+  margin-top: 8px;
+  line-height: 1.5;
+  color: var(--teal);
+}
+
+.field-error {
+  font-size: .73rem;
+  margin-top: 8px;
+  line-height: 1.5;
+  color: #a7332d;
+}
+
+@media (max-width: 960px) {
+  .field label {
+    font-size: 1rem;
+  }
+  .input-wrap input {
+    height: 56px;
+    font-size: max(16px, 1rem);
+  }
+  .input-wrap {
+    min-height: 58px;
+    padding: 0 12px;
+    gap: 10px;
+  }
+  .password-toggle {
+    min-width: 44px;
+    min-height: 48px;
+  }
+  .field-hint {
+    font-size: .875rem;
+  }
+  .field-error {
+    font-size: .875rem;
+  }
+}
