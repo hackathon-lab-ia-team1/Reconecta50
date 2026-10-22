@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { loginUser, registerUser, getUserBySession, destroySession, AuthError } from '../services/authService.js';
+import { loginUser, registerUser, getPublicUserBySession, destroySession, AuthError } from '../services/authService.js';
 import { SESSION_COOKIE } from '../middlewares/authMiddleware.js';
 
 const COOKIE_OPTIONS = {
@@ -13,8 +13,9 @@ const COOKIE_OPTIONS = {
 /**
  * POST /auth/login
  * Body: { identifier: string, password: string }
+ * Retorna: { success, user: { id, fullName } } — dados limitados
  */
-export function handleLogin(req: Request, res: Response): void {
+export async function handleLogin(req: Request, res: Response): Promise<void> {
   try {
     const { identifier, password } = req.body;
 
@@ -23,7 +24,7 @@ export function handleLogin(req: Request, res: Response): void {
       return;
     }
 
-    const result = loginUser({ identifier, password });
+    const result = await loginUser({ identifier, password });
     res.cookie(SESSION_COOKIE, result.sessionId, COOKIE_OPTIONS);
     res.json({ success: true, user: result.user });
   } catch (error) {
@@ -39,8 +40,9 @@ export function handleLogin(req: Request, res: Response): void {
 /**
  * POST /auth/register
  * Body: { fullName, phone, cpf, birthDate, address, password }
+ * Retorna: { success, user: { id, fullName } } — dados limitados
  */
-export function handleRegister(req: Request, res: Response): void {
+export async function handleRegister(req: Request, res: Response): Promise<void> {
   try {
     const { fullName, phone, cpf, birthDate, address, password } = req.body;
 
@@ -49,12 +51,33 @@ export function handleRegister(req: Request, res: Response): void {
       return;
     }
 
-    if (password.length < 8) {
+    if (typeof password !== 'string' || password.length < 8) {
       res.status(400).json({ error: 'A senha deve ter pelo menos 8 caracteres.' });
       return;
     }
 
-    const result = registerUser({ fullName, phone, cpf, birthDate, address, password });
+    // Validação básica de CPF (11 dígitos numéricos)
+    const cpfDigits = String(cpf).replace(/\D/g, '');
+    if (cpfDigits.length !== 11) {
+      res.status(400).json({ error: 'CPF deve conter 11 dígitos.' });
+      return;
+    }
+
+    // Validação básica de telefone (10 ou 11 dígitos)
+    const phoneDigits = String(phone).replace(/\D/g, '');
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+      res.status(400).json({ error: 'Telefone deve conter 10 ou 11 dígitos com DDD.' });
+      return;
+    }
+
+    const result = await registerUser({
+      fullName: String(fullName).trim(),
+      phone: phoneDigits,
+      cpf: cpfDigits,
+      birthDate: String(birthDate),
+      address: String(address).trim(),
+      password,
+    });
     res.cookie(SESSION_COOKIE, result.sessionId, COOKIE_OPTIONS);
     res.status(201).json({ success: true, user: result.user });
   } catch (error) {
@@ -69,7 +92,7 @@ export function handleRegister(req: Request, res: Response): void {
 
 /**
  * GET /auth/me
- * Retorna dados do usuário logado baseado no cookie de sessão.
+ * Retorna: { authenticated, user: { id, fullName } } — dados limitados
  */
 export function handleMe(req: Request, res: Response): void {
   const sessionId = req.cookies?.[SESSION_COOKIE];
@@ -77,7 +100,7 @@ export function handleMe(req: Request, res: Response): void {
     res.status(401).json({ authenticated: false });
     return;
   }
-  const user = getUserBySession(sessionId);
+  const user = getPublicUserBySession(sessionId);
   if (!user) {
     res.clearCookie(SESSION_COOKIE, { path: '/' });
     res.status(401).json({ authenticated: false });

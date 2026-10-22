@@ -1,24 +1,46 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import type { UserRecord } from '../../types/auth.types.js';
-import { hashPassword } from '../../services/crypto.js';
 
-// ─── Store em memória para o hackathon ───
-// Em produção seria um banco de dados real.
+/**
+ * Store de usuários com persistência em arquivo JSON.
+ *
+ * - Em desenvolvimento: persiste em DATA_DIR/users.json (padrão: ./data/)
+ * - O arquivo é lido na inicialização e gravado a cada mutação.
+ * - Thread-safe o suficiente para um servidor single-process.
+ */
 
-const users: UserRecord[] = [];
+const DATA_DIR = process.env.DATA_DIR || path.resolve(process.cwd(), 'data');
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
 
-/** Inicializa com um usuário demo para testes */
-export function seedDemoUser(): void {
-  if (users.length > 0) return;
-  users.push({
-    id: 'demo-001',
-    fullName: 'Maria da Silva',
-    phone: '11999999999',
-    cpf: '52998224725',         // CPF válido de teste
-    birthDate: '1970-05-15',
-    address: 'Rua das Flores, 123 - São Paulo, SP',
-    passwordHash: hashPassword('senha1234'),
-    createdAt: new Date().toISOString(),
-  });
+let users: UserRecord[] = [];
+
+/** Carrega usuários do disco. Cria o diretório/arquivo se não existirem. */
+export function loadUsers(): void {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (fs.existsSync(USERS_FILE)) {
+      const raw = fs.readFileSync(USERS_FILE, 'utf-8');
+      users = JSON.parse(raw);
+    }
+  } catch (err) {
+    console.error('[userStore] Erro ao carregar users.json, iniciando vazio:', err);
+    users = [];
+  }
+}
+
+/** Persiste o array de usuários no disco. */
+function persist(): void {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('[userStore] Erro ao persistir users.json:', err);
+  }
 }
 
 export function findUserByIdentifier(identifier: string): UserRecord | undefined {
@@ -40,8 +62,9 @@ export function phoneExists(phone: string): boolean {
 
 export function addUser(user: UserRecord): void {
   users.push(user);
+  persist();
 }
 
-export function getAllUsers(): readonly UserRecord[] {
-  return users;
+export function getUserCount(): number {
+  return users.length;
 }

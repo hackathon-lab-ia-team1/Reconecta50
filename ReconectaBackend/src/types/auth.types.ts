@@ -21,10 +21,23 @@ export interface UserRecord {
   cpf: string;
   birthDate: string;
   address: string;
-  passwordHash: string; // para hackathon usamos hash simples
+  passwordHash: string;
   createdAt: string;
 }
 
+/**
+ * Dados públicos do usuário retornados pela API.
+ * Limitado a id e nome — NÃO inclui CPF, telefone, endereço ou data de nascimento.
+ */
+export interface PublicUser {
+  id: string;
+  fullName: string;
+}
+
+/**
+ * Dados do usuário disponíveis na sessão (server-side).
+ * Usado internamente pelo middleware; nunca enviado diretamente ao cliente.
+ */
 export interface SessionUser {
   id: string;
   fullName: string;

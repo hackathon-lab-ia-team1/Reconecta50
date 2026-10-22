@@ -4,7 +4,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { corsMiddleware } from './middlewares/corsMiddleware.js';
 import routes from './routes/index.js';
-import { seedDemoUser } from './data/mocks/users.mock.js';
+import { loadUsers, getUserCount } from './data/mocks/users.mock.js';
+import { loadSessions, getSessionCount } from './data/sessionStore.js';
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ app.get('/', (_req: Request, res: Response) => {
   res.json({
     projeto: 'Reconecta 50+ API',
     status: 'online',
-    versao: '2.0.0',
+    versao: '2.1.0',
     endpoints: {
       auth: ['/auth/login', '/auth/register', '/auth/me', '/auth/logout'],
       api: ['/api/curriculo/gerar', '/api/vagas'],
@@ -43,13 +44,15 @@ app.get('/api/health', (_req: Request, res: Response) => {
 // ─── Rotas da Aplicação ───
 app.use(routes);
 
-// ─── Seed de dados demo ───
-seedDemoUser();
+// ─── Carregar dados persistidos ───
+loadUsers();
+loadSessions();
 
 // ─── Inicialização ───
 app.listen(PORT, () => {
-  console.log(`🚀 Reconecta 50+ Backend v2.0 rodando em http://localhost:${PORT}`);
-  console.log(`📋 CORS habilitado para: ${process.env.CORS_ORIGIN || 'http://localhost:5173'}`);
+  const env = process.env.NODE_ENV || 'development';
+  console.log(`🚀 Reconecta 50+ Backend v2.1 rodando em http://localhost:${PORT} [${env}]`);
+  console.log(`📋 CORS: origens autorizadas via CORS_ORIGIN`);
   console.log(`🔑 Gemini API: ${process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('sua_chave') ? 'Configurada ✓' : 'Modo mock (sem chave)'}`);
-  console.log(`👤 Usuário demo: CPF 52998224725 / Senha: senha1234`);
+  console.log(`💾 Dados: ${getUserCount()} usuário(s) e ${getSessionCount()} sessão(ões) carregados`);
 });
