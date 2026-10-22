@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: .78rem;
+  font-size: 0.78rem;
   flex-wrap: wrap;
   color: var(--forest);
 }
@@ -34,7 +34,7 @@
   font-weight: 500;
 }
 
-@media (max-width:760px) {
+@media (max-width: 760px) {
   .accessibility-label {
     display: none;
   }

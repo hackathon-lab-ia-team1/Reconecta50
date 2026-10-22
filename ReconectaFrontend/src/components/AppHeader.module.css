@@ -11,14 +11,14 @@
   width: 100%;
 }
 
-@media (min-width:1450px) {
+@media (min-width: 1450px) {
   .header {
     padding-left: 8%;
     padding-right: 8%;
   }
 }
 
-@media (max-width:1050px) {
+@media (max-width: 1050px) {
   .header {
     padding: 22px 24px;
   }
@@ -48,7 +48,7 @@
   gap: 12px;
 }
 
-@media (max-width:480px) {
+@media (max-width: 480px) {
   .header-actions {
     width: 100%;
     justify-content: center;

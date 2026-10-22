@@ -12,6 +12,10 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx}'],
     languageOptions: { globals: globals.browser },
     plugins: { 'react-hooks': hooks, 'react-refresh': refresh },
-    rules: { ...hooks.configs.recommended.rules, 'react-refresh/only-export-components': ['warn', { allowConstantExport: true }] },
+    rules: {
+      ...hooks.configs.recommended.rules,
+      'no-empty': ['error', { allowEmptyCatch: true }],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    },
   },
 );

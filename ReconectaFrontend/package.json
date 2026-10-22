@@ -12,11 +12,14 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "npm run test:unit && npm run test:components",
     "test:unit": "node --experimental-strip-types --test tests/*.test.mjs",
     "test:components": "vitest run"
   },
   "dependencies": {
+    "@fix-webm-duration/fix": "^1.0.1",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -34,6 +37,7 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.0.0",
     "jsdom": "^30.1.3",
+    "prettier": "^3.9.10",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.0.0",
     "vite": "^6.0.0",

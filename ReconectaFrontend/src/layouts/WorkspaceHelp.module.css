@@ -1,0 +1,11 @@
+.steps {
+  padding-left: 24px;
+  margin: 16px 0;
+  display: grid;
+  gap: 12px;
+}
+
+.steps a {
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
