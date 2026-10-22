@@ -1,0 +1,136 @@
+.form-fields {
+  border: 0;
+  padding: 0;
+  margin: 0 0 24px;
+  min-width: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+a.text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+a.text-button:hover {
+  text-decoration: underline;
+}
+
+.recovery {
+  display: flex;
+  justify-content: flex-end;
+  margin: 14px 0 23px;
+}
+
+.text-button {
+  background: none;
+  border: 0;
+  padding: 3px 0;
+  font-weight: 600;
+  font-size: .8rem;
+  min-height: 30px;
+  color: var(--blue);
+}
+
+.text-button:hover {
+  text-decoration: underline;
+}
+
+.primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  min-height: 56px;
+  border: 1px solid #327249;
+  border-radius: 9px;
+  font-size: .93rem;
+  font-weight: 600;
+  box-shadow: 0 4px 8px #193f3010;
+  background: var(--blue);
+  border-color: var(--blue);
+  color: var(--white);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.signup {
+  text-align: center;
+  border-bottom: 1px solid #e2e6de;
+  padding: 25px 0 28px;
+  font-size: .82rem;
+  border-color: var(--border);
+  color: var(--teal);
+}
+
+.signup .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.form-message {
+  display: flex;
+  gap: 10px;
+  background: #fff3e6;
+  border: 1px solid #e6c69f;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: .8rem;
+  line-height: 1.6;
+  color: #794b17;
+  margin-bottom: 16px;
+}
+
+.form-message.success {
+  background: #f0f3f2;
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.form-message span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 960px) {
+  .primary-button {
+    font-size: 1rem;
+    min-height: 58px;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .text-button {
+    font-size: 1rem;
+    min-height: 44px;
+    white-space: normal;
+  }
+  .form-message {
+    font-size: .875rem;
+  }
+  .signup {
+    font-size: .875rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+  }
+  .signup .text-button {
+    justify-content: center;
+  }
+}

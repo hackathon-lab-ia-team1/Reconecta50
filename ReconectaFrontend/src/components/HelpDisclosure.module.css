@@ -1,0 +1,49 @@
+.help-area {
+  max-width: 410px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.help-button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  border: 0;
+  background: none;
+  font-size: .76rem;
+  min-height: 44px;
+  color: var(--teal);
+}
+
+.help-button:hover {
+  color: var(--blue);
+}
+
+.help-area>p {
+  font-size: .8rem;
+  line-height: 1.7;
+  padding: 15px;
+  background: #edf2e8;
+  border-radius: 8px;
+}
+
+@media (max-width: 960px) {
+  .help-area {
+    width: 100%;
+    max-width: 450px;
+    margin-top: 16px;
+  }
+  .help-button {
+    min-height: 44px;
+    white-space: normal;
+    font-size: .875rem;
+  }
+  .help-area > p {
+    font-size: .875rem;
+  }
+}
+
+.help-area > p {
+  background: #f0f3f2;
+  color: var(--teal);
+}
