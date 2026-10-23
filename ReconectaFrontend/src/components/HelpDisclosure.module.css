@@ -10,7 +10,7 @@
   align-items: center;
   border: 0;
   background: none;
-  font-size: .76rem;
+  font-size: 0.76rem;
   min-height: 44px;
   color: var(--teal);
 }
@@ -19,11 +19,12 @@
   color: var(--blue);
 }
 
-.help-area>p {
-  font-size: .8rem;
+.help-content {
+  font-size: 0.8rem;
   line-height: 1.7;
   padding: 15px;
-  background: #edf2e8;
+  background: #f0f3f2;
+  color: var(--teal);
   border-radius: 8px;
 }
 
@@ -36,14 +37,16 @@
   .help-button {
     min-height: 44px;
     white-space: normal;
-    font-size: .875rem;
+    font-size: 0.875rem;
   }
-  .help-area > p {
-    font-size: .875rem;
+  .help-content {
+    font-size: 0.875rem;
   }
 }
 
-.help-area > p {
-  background: #f0f3f2;
-  color: var(--teal);
+.help-area.wide {
+  max-width: none;
+  width: 100%;
+  margin-top: 0;
+  text-align: left;
 }

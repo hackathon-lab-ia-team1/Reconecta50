@@ -1,6 +1,11 @@
-// ─── Tipos do módulo de currículo (reexportados do geminiService) ───
+export interface EntradaTextoDireto {
+  source?: 'text';
+  text?: string;
+}
 
 export interface FormularioCurriculo {
+  source?: 'text';
+  text?: string;
   usuario?: {
     nome?: string;
     email?: string;
@@ -17,15 +22,17 @@ export interface FormularioCurriculo {
   };
 }
 
+export interface ExperienciaFormatadaItem {
+  cargo: string;
+  periodo: string;
+  responsabilidades: string[];
+}
+
 export interface CurriculoEstruturado {
   nome: string;
   resumoProfissional: string;
   competenciasChave: string[];
-  experienciaFormatada: Array<{
-    cargo: string;
-    periodo: string;
-    responsabilidades: string[];
-  }>;
+  experienciaFormatada: ExperienciaFormatadaItem[];
   mensagemApoio: string;
 }
 

@@ -1,0 +1,38 @@
+.shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #f6f8f5;
+}
+.shell > header {
+  background: white;
+}
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px max(20px, env(safe-area-inset-left));
+}
+.feedback {
+  margin: 20px auto 0;
+  line-height: 1.7;
+  color: #794b17;
+}
+.skipLink {
+  position: fixed;
+  top: -200px;
+  left: 16px;
+  z-index: 20;
+  padding: 12px;
+  background: white;
+}
+.skipLink:focus {
+  top: 12px;
+}
+@media (max-width: 600px) {
+  .main {
+    padding: 24px max(16px, env(safe-area-inset-left));
+  }
+}

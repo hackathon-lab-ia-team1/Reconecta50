@@ -1,0 +1,42 @@
+.tracking {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #edf2f6;
+  padding: 20px;
+  border: 1px solid #d4dfe8;
+  border-radius: 12px;
+  color: var(--blue);
+}
+.tracking > div {
+  min-width: 0;
+}
+.tracking h3 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.tracking strong {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.tracking p {
+  color: var(--teal);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+.tracking .contact {
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  .tracking {
+    padding: 18px 14px;
+    gap: 10px;
+  }
+  .tracking p {
+    font-size: 0.85rem;
+  }
+}

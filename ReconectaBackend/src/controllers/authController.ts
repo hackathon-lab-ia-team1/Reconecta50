@@ -1,5 +1,11 @@
 import type { Request, Response } from 'express';
-import { loginUser, registerUser, getPublicUserBySession, destroySession, AuthError } from '../services/authService.js';
+import {
+  loginUser,
+  registerUser,
+  getPublicUserBySession,
+  destroySession,
+  AuthError,
+} from '../services/authService.js';
 import { SESSION_COOKIE } from '../middlewares/authMiddleware.js';
 
 const COOKIE_OPTIONS = {
@@ -7,19 +13,14 @@ const COOKIE_OPTIONS = {
   sameSite: 'lax' as const,
   path: '/',
   secure: process.env.NODE_ENV === 'production',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
-/**
- * POST /auth/login
- * Body: { identifier: string, password: string }
- * Retorna: { success, user: { id, fullName } } — dados limitados
- */
 export async function handleLogin(req: Request, res: Response): Promise<void> {
   try {
-    const { identifier, password } = req.body;
+    const { identifier, password } = req.body ?? {};
 
-    if (!identifier || !password) {
+    if (!identifier || !password || typeof identifier !== 'string' || typeof password !== 'string') {
       res.status(400).json({ error: 'Informe seu CPF/telefone e senha.' });
       return;
     }
@@ -37,14 +38,9 @@ export async function handleLogin(req: Request, res: Response): Promise<void> {
   }
 }
 
-/**
- * POST /auth/register
- * Body: { fullName, phone, cpf, birthDate, address, password }
- * Retorna: { success, user: { id, fullName } } — dados limitados
- */
 export async function handleRegister(req: Request, res: Response): Promise<void> {
   try {
-    const { fullName, phone, cpf, birthDate, address, password } = req.body;
+    const { fullName, phone, cpf, birthDate, address, password } = req.body ?? {};
 
     if (!fullName || !phone || !cpf || !birthDate || !address || !password) {
       res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
@@ -56,14 +52,12 @@ export async function handleRegister(req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Validação básica de CPF (11 dígitos numéricos)
     const cpfDigits = String(cpf).replace(/\D/g, '');
     if (cpfDigits.length !== 11) {
       res.status(400).json({ error: 'CPF deve conter 11 dígitos.' });
       return;
     }
 
-    // Validação básica de telefone (10 ou 11 dígitos)
     const phoneDigits = String(phone).replace(/\D/g, '');
     if (phoneDigits.length < 10 || phoneDigits.length > 11) {
       res.status(400).json({ error: 'Telefone deve conter 10 ou 11 dígitos com DDD.' });
@@ -90,10 +84,6 @@ export async function handleRegister(req: Request, res: Response): Promise<void>
   }
 }
 
-/**
- * GET /auth/me
- * Retorna: { authenticated, user: { id, fullName } } — dados limitados
- */
 export function handleMe(req: Request, res: Response): void {
   const sessionId = req.cookies?.[SESSION_COOKIE];
   if (!sessionId) {
@@ -109,10 +99,6 @@ export function handleMe(req: Request, res: Response): void {
   res.json({ authenticated: true, user });
 }
 
-/**
- * POST /auth/logout
- * Limpa o cookie de sessão.
- */
 export function handleLogout(req: Request, res: Response): void {
   const sessionId = req.cookies?.[SESSION_COOKIE];
   if (sessionId) {

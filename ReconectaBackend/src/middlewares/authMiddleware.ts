@@ -2,7 +2,6 @@ import type { Request, Response, NextFunction } from 'express';
 import { getUserBySession } from '../services/authService.js';
 import type { SessionUser } from '../types/auth.types.js';
 
-// Estende o Request do Express para incluir o usuário autenticado
 declare global {
   namespace Express {
     interface Request {
@@ -11,12 +10,8 @@ declare global {
   }
 }
 
-const SESSION_COOKIE = 'reconecta_session';
+export const SESSION_COOKIE = 'reconecta_session';
 
-/**
- * Middleware que verifica se o cookie de sessão é válido.
- * Se sim, injeta `req.user`. Se não, retorna 401.
- */
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
   const sessionId = req.cookies?.[SESSION_COOKIE];
   if (!sessionId) {
@@ -34,5 +29,3 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   req.user = user;
   next();
 }
-
-export { SESSION_COOKIE };
