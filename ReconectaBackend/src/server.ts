@@ -19,6 +19,7 @@ app.use(corsMiddleware);
 app.use(express.json({ limit: '64kb' }));
 app.use(cookieParser());
 
+// ─── Health & Info ───
 app.get('/', (_req: Request, res: Response) => {
   res.json({
     projeto: 'Reconecta 50+ API',
@@ -47,6 +48,7 @@ app.use(routes);
 loadUsers();
 loadSessions();
 
+// ─── Inicialização ───
 app.listen(PORT, () => {
   const env = process.env.NODE_ENV || 'development';
   console.log(`🚀 Reconecta 50+ Backend v2.1 rodando em http://localhost:${PORT} [${env}]`);
