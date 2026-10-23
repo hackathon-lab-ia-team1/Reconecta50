@@ -1,22 +1,34 @@
-import express, { Request, Response } from 'express';
-import cors from 'cors';
+import express from 'express';
+import type { Request, Response } from 'express';
+import cookieParser from 'cookie-parser';
+import path from 'node:path';
 import dotenv from 'dotenv';
-import { gerarCurriculoComIA } from './services/geminiService.js';
-import { VAGAS_AFIRMATIVAS } from './data/mocks/vagas.mock.js';
+import { corsMiddleware } from './middlewares/corsMiddleware.js';
+import routes from './routes/index.js';
+import { loadUsers, getUserCount } from './data/mocks/users.mock.js';
+import { loadSessions, getSessionCount } from './data/sessionStore.js';
 
 dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), 'ReconectaBackend', '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '..', 'ReconectaBackend', '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
-app.use(express.json());
+app.use(corsMiddleware);
+app.use(express.json({ limit: '64kb' }));
+app.use(cookieParser());
 
 app.get('/', (_req: Request, res: Response) => {
   res.json({
     projeto: 'Reconecta 50+ API',
     status: 'online',
-    versao: '1.0.0'
+    versao: '2.1.0',
+    endpoints: {
+      auth: ['/auth/login', '/auth/register', '/auth/me', '/auth/logout'],
+      api: ['/api/curriculo/gerar', '/api/vagas'],
+      health: ['/api/health'],
+    },
   });
 });
 
@@ -24,31 +36,21 @@ app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    chaveGeminiConfigurada: Boolean(process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('sua_chave'))
+    chaveGeminiConfigurada: Boolean(
+      process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('sua_chave')
+    ),
   });
 });
 
-app.post('/api/curriculo/gerar', async (req: Request, res: Response) => {
-  try {
-    const resultado = await gerarCurriculoComIA(req.body);
-    res.json(resultado);
-  } catch (error) {
-    console.error('Erro na rota /api/curriculo/gerar:', error);
-    res.status(500).json({
-      sucesso: false,
-      erro: 'Não foi possível gerar o currículo no momento.'
-    });
-  }
-});
+app.use(routes);
 
-app.get('/api/vagas', (_req: Request, res: Response) => {
-  res.json({
-    sucesso: true,
-    total: VAGAS_AFIRMATIVAS.length,
-    vagas: VAGAS_AFIRMATIVAS
-  });
-});
+loadUsers();
+loadSessions();
 
 app.listen(PORT, () => {
-  console.log(`🚀 Reconecta 50+ Backend (TypeScript) rodando em http://localhost:${PORT}`);
+  const env = process.env.NODE_ENV || 'development';
+  console.log(`🚀 Reconecta 50+ Backend v2.1 rodando em http://localhost:${PORT} [${env}]`);
+  console.log(`📋 CORS habilitado para origens autorizadas (${process.env.CORS_ORIGIN || 'http://localhost:5173'})`);
+  console.log(`🔑 Gemini API: ${process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('sua_chave') ? 'Configurada ✓' : 'Modo mock seguro (sem chave)'}`);
+  console.log(`💾 Dados: ${getUserCount()} usuário(s) e ${getSessionCount()} sessão(ões) carregados`);
 });
