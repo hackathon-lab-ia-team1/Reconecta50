@@ -9,11 +9,13 @@ import {
 } from '../services/authService.js';
 import { SESSION_COOKIE } from '../middlewares/authMiddleware.js';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  sameSite: 'lax' as const,
+  sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
   path: '/',
-  secure: process.env.NODE_ENV === 'production',
+  secure: isProduction,
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
@@ -93,7 +95,7 @@ export function handleMe(req: Request, res: Response): void {
   }
   const user = getPublicUserBySession(sessionId);
   if (!user) {
-    res.clearCookie(SESSION_COOKIE, { path: '/' });
+    res.clearCookie(SESSION_COOKIE, COOKIE_OPTIONS);
     res.status(401).json({ authenticated: false });
     return;
   }
@@ -108,7 +110,7 @@ export function handleProfile(req: Request, res: Response): void {
   }
   const user = getUserBySession(sessionId);
   if (!user) {
-    res.clearCookie(SESSION_COOKIE, { path: '/' });
+    res.clearCookie(SESSION_COOKIE, COOKIE_OPTIONS);
     res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
     return;
   }
@@ -127,6 +129,6 @@ export function handleLogout(req: Request, res: Response): void {
   if (sessionId) {
     destroySession(sessionId);
   }
-  res.clearCookie(SESSION_COOKIE, { path: '/' });
+  res.clearCookie(SESSION_COOKIE, COOKIE_OPTIONS);
   res.json({ success: true, message: 'Sessão encerrada.' });
 }
