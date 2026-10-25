@@ -51,8 +51,7 @@ it('redireciona sessão expirada e permite entrar na demonstração explicitamen
   render(<App />);
   await screen.findByRole('heading', { name: 'Vamos nos reconectar?' });
   expect(window.location.pathname).toBe('/login');
-  fireEvent.click(screen.getByRole('link', { name: 'Conhecer o painel de demonstração' }));
-  await screen.findByRole('heading', { name: /o que você quer fazer hoje/i });
+  expect(screen.queryByRole('link', { name: 'Conhecer o painel de demonstração' })).toBeNull();
   expect(screen.queryByRole('button', { name: 'Sair' })).toBeNull();
 });
 

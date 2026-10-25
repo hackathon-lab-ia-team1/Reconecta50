@@ -31,7 +31,8 @@ export function AuthLayout({
   const { speaking, audioAvailable, readingError, readPage } = usePageReader(contentRef);
 
   useEffect(() => {
-    document.title = `${title} | Reconecta 50+`;
+    const isRegister = title.toLowerCase().includes('conta');
+    document.title = isRegister ? 'Reconecta 50+ · Cadastro' : 'Reconecta 50+ · Entrar';
     window.scrollTo(0, 0);
     titleRef.current?.focus({ preventScroll: true });
   }, [title]);
@@ -55,7 +56,7 @@ export function AuthLayout({
         </p>
       )}
       <main className={layoutStyles['login-layout']} data-read-order>
-        <WelcomePanel />
+        <WelcomePanel data-read-skip />
         <section
           className={layoutStyles['login-section']}
           aria-labelledby="auth-title"
@@ -68,9 +69,6 @@ export function AuthLayout({
             </h2>
             <p className={layoutStyles['login-description']}>{description}</p>
             {children}
-            <p className={layoutStyles['demo-note']}>
-              Versão de demonstração · autenticação em preparação
-            </p>
           </div>
           <HelpDisclosure label={helpLabel}>{helpText}</HelpDisclosure>
         </section>

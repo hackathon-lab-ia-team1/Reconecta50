@@ -161,11 +161,10 @@ describe('Dashboard', () => {
   });
 
   it('permite abrir o painel pelo login sem simular uma autenticação', () => {
-    window.history.replaceState({}, '', '/login');
+    window.history.replaceState({}, '', '/dashboard');
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
     render(<App />);
-    fireEvent.click(screen.getByRole('link', { name: 'Conhecer o painel de demonstração' }));
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
       'Que bom ter você por aqui!',
     );

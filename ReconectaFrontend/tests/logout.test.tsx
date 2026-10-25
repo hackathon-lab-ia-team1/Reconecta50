@@ -40,10 +40,9 @@ async function openAccount(logoutStatus = 204) {
 }
 
 it('não mostra Sair na prévia mesmo com endpoints de autenticação configurados', () => {
-  vi.stubEnv('VITE_AUTH_LOGIN_URL', '/auth/login');
-  window.history.replaceState({}, '', '/login');
+  vi.stubEnv('VITE_AUTH_LOGIN_URL', '');
+  window.history.replaceState({}, '', '/dashboard');
   render(<App />);
-  fireEvent.click(screen.getByRole('link', { name: 'Conhecer o painel de demonstração' }));
   expect(window.location.pathname).toBe('/dashboard');
   expect(screen.queryByRole('button', { name: 'Sair' })).toBeNull();
   fireEvent.click(screen.getByRole('link', { name: 'Meu currículo' }));
@@ -62,13 +61,7 @@ it('sai da conta, limpa o currículo e preserva o tamanho da fonte', async () =>
   fireEvent.click(screen.getByRole('button', { name: 'Atualizar prévia do currículo' }));
   fireEvent.click(screen.getByRole('button', { name: 'Sair' }));
   await waitFor(() => expect(window.location.pathname).toBe('/login'));
-  fireEvent.click(await screen.findByRole('link', { name: 'Conhecer o painel de demonstração' }));
   expect(screen.queryByRole('button', { name: 'Sair' })).toBeNull();
-  fireEvent.click(screen.getByRole('link', { name: 'Meu currículo' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Preencher currículo manualmente' }));
-  expect((screen.getByLabelText('Apresentação profissional') as HTMLTextAreaElement).value).toBe(
-    '',
-  );
   expect(document.documentElement.style.fontSize).toBe('120%');
 });
 

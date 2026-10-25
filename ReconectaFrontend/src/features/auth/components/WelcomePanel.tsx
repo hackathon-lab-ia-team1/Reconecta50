@@ -1,8 +1,15 @@
 import welcomeStyles from './WelcomePanel.module.css';
+import type { ComponentPropsWithoutRef } from 'react';
 import { ArrowUpRight, BriefcaseBusiness, Check, FileUser, Heart } from 'lucide-react';
-export function WelcomePanel() {
+
+export function WelcomePanel(props: ComponentPropsWithoutRef<'section'>) {
   return (
-    <section className={welcomeStyles['welcome']} aria-labelledby="welcome-title">
+    <section
+      className={welcomeStyles['welcome']}
+      aria-labelledby="welcome-title"
+      data-read-skip
+      {...props}
+    >
       <div className={welcomeStyles['welcome-content']}>
         <span className={welcomeStyles['eyebrow']}>
           <span /> NOVOS COMEÇOS, TODAS AS IDADES

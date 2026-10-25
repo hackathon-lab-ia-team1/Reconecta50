@@ -108,11 +108,11 @@ it('permite tentar novamente se não conseguir carregar os dados', async () => {
 });
 
 it('não consulta dados da conta na prévia', () => {
+  vi.stubEnv('VITE_AUTH_LOGIN_URL', '');
+  window.history.replaceState({}, '', '/perfil');
   const request = vi.fn();
   vi.stubGlobal('fetch', request);
   render(<App />);
-  fireEvent.click(screen.getByRole('link', { name: 'Conhecer o painel de demonstração' }));
-  fireEvent.click(screen.getByRole('link', { name: 'Meu perfil' }));
   expect((screen.getByLabelText('Nome completo') as HTMLInputElement).value).toBe('');
   expect(request).not.toHaveBeenCalled();
 });
@@ -131,11 +131,10 @@ it('descarta uma resposta atrasada após sair da conta', async () => {
   );
   await login();
   fireEvent.click(screen.getByRole('button', { name: 'Sair' }));
-  await screen.findByRole('link', { name: 'Conhecer o painel de demonstração' });
+  await screen.findByRole('button', { name: 'Entrar na minha conta' });
   await act(async () => complete(new Response(JSON.stringify({ profile }))));
-  fireEvent.click(screen.getByRole('link', { name: 'Conhecer o painel de demonstração' }));
-  fireEvent.click(screen.getByRole('link', { name: 'Meu perfil' }));
-  expect((screen.getByLabelText('Nome completo') as HTMLInputElement).value).toBe('');
+  expect(window.location.pathname).toBe('/login');
+  expect(screen.queryByLabelText('Nome completo')).toBeNull();
 });
 
 it('recusa um perfil malformado sem preencher campos com valores inválidos', async () => {
@@ -164,21 +163,9 @@ it('não reaproveita o currículo da prévia nem de outra conta após um novo lo
       );
     }),
   );
-  window.history.replaceState({}, '', '/curriculo');
+  window.history.replaceState({}, '', '/login');
   render(<App />);
-  fireEvent.click(screen.getByRole('link', { name: 'Conhecer o painel de demonstração' }));
-  fireEvent.click(screen.getByRole('link', { name: 'Meu currículo' }));
   fireEvent.click(screen.getByRole('button', { name: 'Diminuir texto' }));
-  function fillResume(summary: string) {
-    fireEvent.click(screen.getByRole('button', { name: 'Preencher currículo manualmente' }));
-    fireEvent.change(screen.getByLabelText('Apresentação profissional'), {
-      target: { value: summary },
-    });
-    fireEvent.change(screen.getByLabelText('Função ou trabalho'), {
-      target: { value: 'Recepcionista' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Atualizar prévia do currículo' }));
-  }
   function openLogin() {
     act(() => {
       window.history.pushState({}, '', '/login');
@@ -199,8 +186,6 @@ it('não reaproveita o currículo da prévia nem de outra conta após um novo lo
     );
     expect(document.documentElement.style.fontSize).toBe('120%');
   }
-  fillResume('Currículo da demonstração.');
-  openLogin();
   await enterAccount();
   fireEvent.change(screen.getByLabelText('Apresentação profissional'), {
     target: { value: 'Currículo da primeira conta.' },

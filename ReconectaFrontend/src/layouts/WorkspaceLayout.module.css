@@ -11,16 +11,23 @@
 .navigation {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
-  padding: 0 max(24px, calc((100vw - 1160px) / 2));
-  background: white;
+  padding: 0 24px;
+  background: #ffffff;
   border-block: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.navigation::-webkit-scrollbar {
+  display: none;
 }
 .navigation nav {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
+  width: min(100%, 1160px);
+  margin: 0 auto;
 }
 .navLink {
   display: flex;
@@ -32,6 +39,8 @@
   font-size: 0.85rem;
   color: var(--teal);
   border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .navLink:hover {
   background: #f0f4ef;
@@ -74,8 +83,7 @@
 }
 @media (max-width: 960px) {
   .navigation {
-    flex-wrap: wrap;
-    padding: 8px 20px;
+    padding: 0 20px;
     gap: 8px;
   }
   .navLink {
@@ -88,6 +96,7 @@
 @media (max-width: 600px) {
   .navigation {
     padding: 12px max(16px, env(safe-area-inset-left)) 8px;
+    overflow-x: visible;
   }
   .navigation nav {
     width: 100%;
@@ -100,6 +109,7 @@
     padding: 10px 8px;
     border: 1px solid var(--border);
     border-radius: 8px;
+    white-space: normal;
     overflow-wrap: anywhere;
   }
   .navLink:last-child {

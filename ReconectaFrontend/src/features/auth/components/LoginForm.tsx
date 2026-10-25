@@ -148,11 +148,13 @@ export function LoginForm({
         {pending ? 'Entrando…' : success ? 'Acesso realizado' : 'Entrar na minha conta'}
         <ArrowRight size={21} aria-hidden="true" />
       </button>
-      <div className={authStyles['signup']}>
-        Ainda não tem uma conta?{' '}
+      <div className={`${authStyles['signup']} ${authStyles['signup-card']}`}>
+        <p className={authStyles['signup-prompt']}>
+          Primeira vez por aqui? Crie sua conta gratuita em 1 minuto.
+        </p>
         {registerLink ?? (
           <button
-            className={authStyles['text-button']}
+            className={authStyles['signup-cta']}
             type="button"
             onClick={() => {
               if (onRegister) {
@@ -164,7 +166,7 @@ export function LoginForm({
               );
             }}
           >
-            Cadastre-se gratuitamente <ArrowRight size={16} aria-hidden="true" />
+            Cadastre-se gratuitamente <ArrowRight size={18} aria-hidden="true" />
           </button>
         )}
       </div>

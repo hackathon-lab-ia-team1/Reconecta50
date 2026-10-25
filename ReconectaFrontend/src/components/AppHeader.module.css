@@ -1,21 +1,13 @@
 .header {
-  max-width: 1440px;
-  margin: auto;
+  width: 100%;
+  background: #ffffff;
   min-height: 108px;
-  padding: 24px 6%;
+  padding: 24px max(24px, calc((100% - 1280px) / 2));
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 24px;
   flex-wrap: wrap;
-  width: 100%;
-}
-
-@media (min-width: 1450px) {
-  .header {
-    padding-left: 8%;
-    padding-right: 8%;
-  }
 }
 
 @media (max-width: 1050px) {

@@ -23,30 +23,23 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it('oferece seis etapas com texto revisável sem exigir suporte a voz', async () => {
+it('oferece quatro etapas fundamentais com texto revisável sem exigir suporte a voz', async () => {
   const generate = vi.fn().mockResolvedValue(resume);
   const generated = vi.fn();
   render(<ResumeVoiceInterview onGenerate={generate} onGenerated={generated} />);
-  expect(screen.getAllByRole('textbox')).toHaveLength(6);
-  expect(screen.getAllByText(/Este navegador não oferece transcrição/)).toHaveLength(5);
-  expect(screen.queryByRole('button', { name: /Gravar áudio: 6\./ })).toBeNull();
+  expect(screen.getAllByRole('textbox')).toHaveLength(4);
+  expect(screen.getAllByText(/Este navegador não oferece transcrição/)).toHaveLength(4);
   fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
     target: { value: 'Recepcionista' },
   });
-  fireEvent.change(screen.getByLabelText('Texto revisável: 2. Formação e cursos'), {
-    target: { value: 'Ensino médio e curso de informática' },
-  });
-  fireEvent.change(screen.getByLabelText('Texto revisável: 3. Idiomas'), {
-    target: { value: 'Português e inglês básico' },
-  });
-  fireEvent.change(screen.getByLabelText('Texto revisável: 4. Experiências profissionais'), {
+  fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
     target: { value: 'Atendi clientes na clínica.' },
   });
-  fireEvent.change(screen.getByLabelText('Texto revisável: 5. Habilidades'), {
+  fireEvent.change(screen.getByLabelText('Texto revisável: 3. Suas habilidades'), {
     target: { value: 'Excel e Word' },
   });
-  fireEvent.change(screen.getByLabelText('Links de contato (opcional)'), {
-    target: { value: 'linkedin.com/in/ana' },
+  fireEvent.change(screen.getByLabelText('Texto revisável: 4. Formação e escolaridade'), {
+    target: { value: 'Ensino médio e curso de informática' },
   });
   fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
   await waitFor(() => expect(generated).toHaveBeenCalled());
@@ -54,15 +47,13 @@ it('oferece seis etapas com texto revisável sem exigir suporte a voz', async ()
     source: 'text',
     sections: {
       education: 'Ensino médio e curso de informática',
-      languages: 'Português e inglês básico',
     },
   });
   expect(generate.mock.calls[0][0].text).toContain('Excel e Word');
   expect(generated).toHaveBeenCalledWith(
     expect.objectContaining({
       education: 'Ensino médio e curso de informática',
-      languages: 'Português e inglês básico',
-      additionalContacts: 'linkedin.com/in/ana',
+      languages: 'Português (Nativo/Fluente)',
     }),
   );
 });
@@ -82,7 +73,7 @@ it('valida as etapas necessárias e preserva o conteúdo ao cancelar uma geraç�
   fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
     target: { value: 'Recepcionista' },
   });
-  fireEvent.change(screen.getByLabelText('Texto revisável: 4. Experiências profissionais'), {
+  fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
     target: { value: 'Atendimento.' },
   });
   fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
@@ -90,7 +81,7 @@ it('valida as etapas necessárias e preserva o conteúdo ao cancelar uma geraç�
   await act(async () => complete(resume));
   expect(generated).not.toHaveBeenCalled();
   expect(
-    (screen.getByLabelText('Texto revisável: 4. Experiências profissionais') as HTMLTextAreaElement)
+    (screen.getByLabelText('Texto revisável: 2. Experiências profissionais') as HTMLTextAreaElement)
       .value,
   ).toBe('Atendimento.');
 });
@@ -221,7 +212,7 @@ it.each([true, false])(
     });
     expect(
       screen
-        .getByRole('button', { name: 'Gravar áudio: 2. Formação e cursos' })
+        .getByRole('button', { name: 'Gravar áudio: 2. Experiências profissionais' })
         .hasAttribute('disabled'),
     ).toBe(true);
     expect(
@@ -241,7 +232,7 @@ it.each([true, false])(
     await waitFor(() =>
       expect(
         screen
-          .getByRole('button', { name: 'Gravar áudio: 2. Formação e cursos' })
+          .getByRole('button', { name: 'Gravar áudio: 2. Experiências profissionais' })
           .hasAttribute('disabled'),
       ).toBe(false),
     );
@@ -251,8 +242,8 @@ it.each([true, false])(
     ).toBe(supported ? 'Quero trabalhar como recepcionista.' : '');
     expect(screen.getByLabelText('Ouvir áudio: 1. Função que você procura')).toBeTruthy();
     expect(stopTrack).toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Gravar áudio: 2. Formação e cursos' }));
-    await screen.findByRole('button', { name: 'Concluir áudio: 2. Formação e cursos' });
+    fireEvent.click(screen.getByRole('button', { name: 'Gravar áudio: 2. Experiências profissionais' }));
+    await screen.findByRole('button', { name: 'Concluir áudio: 2. Experiências profissionais' });
     const current = RecognitionMock.instances.at(-1)!;
     view.unmount();
     if (supported) expect(current.abort).toHaveBeenCalled();

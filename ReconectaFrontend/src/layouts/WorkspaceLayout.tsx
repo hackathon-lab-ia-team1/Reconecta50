@@ -20,11 +20,11 @@ import { usePageReader } from '../features/accessibility/usePageReader';
 import styles from './WorkspaceLayout.module.css';
 
 const navigation = [
-  { to: '/dashboard', label: 'Visão geral', icon: LayoutDashboard },
-  { to: '/perfil', label: 'Meu perfil', icon: UserRound },
-  { to: '/curriculo', label: 'Meu currículo', icon: FileUser },
-  { to: '/vagas-recomendadas', label: 'Vagas recomendadas', icon: Search },
-  { to: '/minhas-vagas', label: 'Minhas vagas', icon: BriefcaseBusiness },
+  { to: '/dashboard', label: 'Visão geral', tabTitle: 'Painel', icon: LayoutDashboard },
+  { to: '/perfil', label: 'Meu perfil', tabTitle: 'Meu perfil', icon: UserRound },
+  { to: '/curriculo', label: 'Meu currículo', tabTitle: 'Meu currículo', icon: FileUser },
+  { to: '/vagas-recomendadas', label: 'Vagas recomendadas', tabTitle: 'Vagas', icon: Search },
+  { to: '/minhas-vagas', label: 'Minhas vagas', tabTitle: 'Minhas vagas', icon: BriefcaseBusiness },
 ];
 
 export function WorkspaceLayout() {
@@ -62,7 +62,8 @@ export function WorkspaceLayout() {
   useEffect(() => {
     stopReading();
     const title = mainRef.current?.querySelector('h1');
-    document.title = `${title?.textContent ?? 'Meu painel'} | Reconecta 50+`;
+    const section = navigation.find((item) => item.to === pathname)?.tabTitle ?? 'Painel';
+    document.title = `Reconecta 50+ · ${section}`;
     window.scrollTo(0, 0);
     title?.focus({ preventScroll: true });
   }, [pathname, stopReading]);
