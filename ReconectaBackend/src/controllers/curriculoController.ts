@@ -9,7 +9,7 @@ import type { FormularioCurriculo } from '../types/curriculo.types.js';
 /**
  * POST /api/curriculo/gerar
  * Compatível com ambos os formatos do frontend:
- * 1) { source: 'text', text: '...' }
+ * 1) { source: 'text', text: '...', sections?: {...} }
  * 2) { usuario: {...}, historico: { ultimaExperiencia: { atividadesTextoOuAudio: '...' } } }
  */
 export async function handleGerarCurriculo(req: Request, res: Response): Promise<void> {
@@ -25,7 +25,6 @@ export async function handleGerarCurriculo(req: Request, res: Response): Promise
 
     const payload: FormularioCurriculo = {};
 
-    // Suporte ao formato { source: 'text', text: '...' }
     if (typeof body.text === 'string') {
       const textoLimpo = sanitizarTextoCandidato(body.text);
       payload.source = 'text';
@@ -37,7 +36,36 @@ export async function handleGerarCurriculo(req: Request, res: Response): Promise
       };
     }
 
-    // Suporte ao formato { usuario: ..., historico: ... }
+    if (body.sections && typeof body.sections === 'object') {
+      const s = body.sections as Record<string, unknown>;
+      payload.sections = {
+        targetRole:
+          typeof s.targetRole === 'string'
+            ? sanitizarTextoCandidato(s.targetRole).slice(0, 200)
+            : undefined,
+        education:
+          typeof s.education === 'string'
+            ? sanitizarTextoCandidato(s.education).slice(0, 400)
+            : undefined,
+        languages:
+          typeof s.languages === 'string'
+            ? sanitizarTextoCandidato(s.languages).slice(0, 300)
+            : undefined,
+        experience:
+          typeof s.experience === 'string'
+            ? sanitizarTextoCandidato(s.experience).slice(0, MAX_RELATO_LENGTH)
+            : undefined,
+        skills:
+          typeof s.skills === 'string'
+            ? sanitizarTextoCandidato(s.skills).slice(0, 500)
+            : undefined,
+        additionalContacts:
+          typeof s.additionalContacts === 'string'
+            ? sanitizarTextoCandidato(s.additionalContacts).slice(0, 300)
+            : undefined,
+      };
+    }
+
     if (body.usuario && typeof body.usuario === 'object') {
       payload.usuario = {
         nome:

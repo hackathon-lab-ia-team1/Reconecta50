@@ -3,6 +3,7 @@ import {
   loginUser,
   registerUser,
   getPublicUserBySession,
+  getUserBySession,
   destroySession,
   AuthError,
 } from '../services/authService.js';
@@ -97,6 +98,28 @@ export function handleMe(req: Request, res: Response): void {
     return;
   }
   res.json({ authenticated: true, user });
+}
+
+export function handleProfile(req: Request, res: Response): void {
+  const sessionId = req.cookies?.[SESSION_COOKIE];
+  if (!sessionId) {
+    res.status(401).json({ error: 'Sessão não encontrada. Faça login.' });
+    return;
+  }
+  const user = getUserBySession(sessionId);
+  if (!user) {
+    res.clearCookie(SESSION_COOKIE, { path: '/' });
+    res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
+    return;
+  }
+  res.json({
+    profile: {
+      fullName: user.fullName,
+      phone: user.phone,
+      birthDate: user.birthDate,
+      address: user.address,
+    },
+  });
 }
 
 export function handleLogout(req: Request, res: Response): void {

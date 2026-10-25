@@ -3,9 +3,19 @@ export interface EntradaTextoDireto {
   text?: string;
 }
 
+export interface SecoesEntrevista {
+  targetRole?: string;
+  education?: string;
+  languages?: string;
+  experience?: string;
+  skills?: string;
+  additionalContacts?: string;
+}
+
 export interface FormularioCurriculo {
   source?: 'text';
   text?: string;
+  sections?: SecoesEntrevista;
   usuario?: {
     nome?: string;
     email?: string;
@@ -34,6 +44,9 @@ export interface CurriculoEstruturado {
   competenciasChave: string[];
   experienciaFormatada: ExperienciaFormatadaItem[];
   mensagemApoio: string;
+  cargoDesejado?: string;
+  formacao?: string;
+  idiomas?: string;
 }
 
 export interface RespostaCurriculo {
