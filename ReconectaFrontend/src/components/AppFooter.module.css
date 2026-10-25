@@ -5,12 +5,12 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  font-size: .65rem;
+  font-size: 0.65rem;
   width: 100%;
   color: var(--teal);
 }
 
-.footer>span:last-child {
+.footer > span:last-child {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -27,7 +27,7 @@
     align-items: center;
     text-align: center;
     gap: 10px;
-    font-size: .75rem;
+    font-size: 0.75rem;
     line-height: 1.7;
     padding: 0 24px max(24px, env(safe-area-inset-bottom));
   }

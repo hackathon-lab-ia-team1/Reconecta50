@@ -4,16 +4,22 @@ import { validateRegistration } from '../src/features/auth/utils/validateRegistr
 
 const today = new Date(2026, 9, 20);
 const valid = {
-  fullName: 'Maria da Silva', phone: '(85) 99999-9999', birthDate: '1976-10-20',
-  cpf: '529.982.247-25', address: 'Rua das Flores, 10, Centro, Fortaleza, CE', password: 'minha frase de acesso',
+  fullName: 'Maria da Silva',
+  phone: '(85) 99999-9999',
+  birthDate: '1976-10-20',
+  cpf: '529.982.247-25',
+  address: 'Rua das Flores, 10, Centro, Fortaleza, CE',
+  password: 'minha frase de acesso',
 };
 
 test('aceita quem completa exatamente 50 anos hoje', () => {
   assert.deepEqual(validateRegistration(valid, today), {});
 });
 
-test('rejeita quem só completa 50 anos amanhã', () => {
-  assert.ok(validateRegistration({ ...valid, birthDate: '1976-10-21' }, today).birthDate);
+test('aceita pessoas com menos de 50 anos, sem exigir idade mínima', () => {
+  for (const birthDate of ['1976-10-21', '2000-01-15', '2010-03-20']) {
+    assert.deepEqual(validateRegistration({ ...valid, birthDate }, today), {});
+  }
 });
 
 test('rejeita datas impossíveis, ausentes e futuras', () => {
@@ -27,7 +33,10 @@ test('aceita data válida em ano bissexto', () => {
 });
 
 test('valida nome, telefone, CPF, endereço e senha independentemente', () => {
-  const errors = validateRegistration({ ...valid, fullName: 'Maria', phone: '123', cpf: '', address: ' ', password: 'curta' }, today);
+  const errors = validateRegistration(
+    { ...valid, fullName: 'Maria', phone: '123', cpf: '', address: ' ', password: 'curta' },
+    today,
+  );
   assert.ok(errors.fullName);
   assert.ok(errors.phone);
   assert.ok(errors.cpf);

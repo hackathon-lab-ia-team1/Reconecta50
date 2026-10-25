@@ -1,0 +1,73 @@
+.paper {
+  padding: 32px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow-wrap: anywhere;
+  color: var(--forest);
+}
+.label {
+  font-size: 0.65rem;
+  letter-spacing: 1.4px;
+  color: var(--teal);
+}
+.paper header {
+  border-bottom: 2px solid var(--green);
+  padding-bottom: 20px;
+}
+.paper h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  margin: 12px 0;
+}
+.paper section {
+  margin-top: 28px;
+}
+.paper h3 {
+  font-size: 0.9rem;
+  margin: 0 0 12px;
+  color: var(--blue);
+}
+.paper h4 {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+}
+.paper p,
+.paper li {
+  font-size: 0.8rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+.paper .meta {
+  margin-bottom: 12px;
+  color: var(--teal);
+}
+.paper ul {
+  padding-left: 22px;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .paper {
+    padding: 24px 20px;
+  }
+}
+@media print {
+  .paper {
+    border: 0;
+    padding: 0;
+  }
+  .label {
+    display: none;
+  }
+  .paper h2 {
+    font-size: 22pt;
+  }
+  .paper p,
+  .paper li {
+    font-size: 11pt;
+  }
+  .paper section {
+    break-inside: avoid;
+  }
+}

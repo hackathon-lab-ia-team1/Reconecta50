@@ -1,0 +1,47 @@
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  padding: 0 0 24px;
+}
+.filters > div {
+  min-width: 0;
+  margin-top: 0;
+}
+.selectField label {
+  display: block;
+  font-size: 0.87rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.selectField select {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--forest);
+  background: white;
+  min-height: 56px;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 12px;
+}
+.selectField select:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 4px;
+}
+@media (max-width: 960px) {
+  .selectField label {
+    font-size: 1rem;
+  }
+  .selectField select {
+    min-height: 58px;
+    font-size: max(16px, 1rem);
+  }
+}
+@media (max-width: 700px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
