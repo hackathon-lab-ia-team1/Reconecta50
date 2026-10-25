@@ -89,7 +89,7 @@ export function ChangePasswordForm({ onChangePassword }: ChangePasswordFormProps
           name="newPassword"
           type="password"
           autoComplete="new-password"
-          hint="Use pelo menos 8 caracteres. Você pode usar uma frase fácil de lembrar."
+          hint="Crie uma senha com pelo menos 8 letras ou números. Escolha uma palavra marcante que você não esqueça (ex: nome de neto, cidade ou ano)."
           value={values.newPassword}
           onChange={(event) => update('newPassword', event.target.value)}
           error={errors.newPassword}

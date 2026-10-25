@@ -8,6 +8,7 @@ interface FormFieldProps extends ComponentProps<'input'> {
   hint?: string;
   error?: string;
   icon?: ReactNode;
+  defaultPasswordVisible?: boolean;
 }
 
 export function FormField({
@@ -17,11 +18,12 @@ export function FormField({
   icon,
   id: providedId,
   type = 'text',
+  defaultPasswordVisible = true,
   ...inputProps
 }: FormFieldProps) {
   const generatedId = useId();
   const id = providedId ?? generatedId;
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(defaultPasswordVisible);
   const description = error || hint;
   return (
     <div className={fieldStyles['field']}>

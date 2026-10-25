@@ -14,6 +14,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import { FormField } from '../../../components/FormField';
+import { formatCpfMask, formatPhoneMask } from '../../../utils/personalDataValidation';
 import { validateRegistration } from '../utils/validateRegistration';
 import type {
   RegistrationData,
@@ -43,9 +44,16 @@ export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
   const [message, setMessage] = useState('');
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState(false);
+  const maxBirthDate = new Date().toISOString().split('T')[0];
 
   function update(field: keyof RegistrationValues, value: string) {
-    setValues((current) => ({ ...current, [field]: value }));
+    const formatted =
+      field === 'phone'
+        ? formatPhoneMask(value)
+        : field === 'cpf'
+          ? formatCpfMask(value)
+          : value;
+    setValues((current) => ({ ...current, [field]: formatted }));
     setErrors((current) => ({ ...current, [field]: undefined }));
     setMessage('');
   }
@@ -143,8 +151,10 @@ export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
           label="Data de nascimento"
           name="birthDate"
           type="date"
+          min="1925-01-01"
+          max={maxBirthDate}
           autoComplete="bday"
-          hint="Informe sua data de nascimento."
+          hint="Informe sua data de nascimento. Você pode digitar os números direto no teclado ou usar o calendário."
           icon={<CalendarDays size={20} aria-hidden="true" />}
           value={values.birthDate}
           onChange={(event) => update('birthDate', event.target.value)}
@@ -169,7 +179,7 @@ export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
           type="password"
           autoComplete="new-password"
           placeholder="Digite sua senha"
-          hint="Use pelo menos 8 caracteres. Você pode usar uma frase fácil de lembrar."
+          hint="Crie uma senha com pelo menos 8 letras ou números. Escolha uma palavra marcante que você não esqueça (ex: nome de neto, cidade ou ano)."
           icon={<LockKeyhole size={20} aria-hidden="true" />}
           value={values.password}
           onChange={(event) => update('password', event.target.value)}
@@ -194,10 +204,12 @@ export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
         {pending ? 'Criando sua conta…' : success ? 'Cadastro realizado' : 'Criar minha conta'}
         <ArrowRight size={21} aria-hidden="true" />
       </button>
-      <div className={authStyles['signup']}>
-        Já tem uma conta?{' '}
-        <Link className={authStyles['text-button']} to="/login">
-          Entrar na minha conta <ArrowRight size={16} aria-hidden="true" />
+      <div className={`${authStyles['signup']} ${authStyles['signup-card']}`}>
+        <p className={authStyles['signup-prompt']}>
+          Já tem uma conta cadastrada no Reconecta 50+?
+        </p>
+        <Link className={authStyles['signup-cta']} to="/login">
+          Entrar na minha conta <ArrowRight size={18} aria-hidden="true" />
         </Link>
       </div>
     </form>

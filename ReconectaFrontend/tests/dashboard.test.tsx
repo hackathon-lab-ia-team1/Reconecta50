@@ -126,7 +126,7 @@ describe('Dashboard', () => {
     navigate('Vagas recomendadas');
     expect(screen.getByRole('button', { name: 'Encontrar vagas para meu currículo' })).toBeTruthy();
     expect(
-      screen.queryByRole('heading', { name: 'Primeiro, deixe seu currículo pronto' }),
+      screen.queryByRole('heading', { name: '🔒 Esta área requer seu currículo pronto' }),
     ).toBeNull();
     navigate('Meu currículo');
     fireEvent.click(screen.getByRole('button', { name: 'Preencher currículo manualmente' }));

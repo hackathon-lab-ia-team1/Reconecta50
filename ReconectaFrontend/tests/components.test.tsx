@@ -203,18 +203,21 @@ describe('Formulários reutilizáveis', () => {
     expect(screen.getByLabelText('Apresentação').getAttribute('aria-invalid')).toBe('true');
   });
 
-  it('desabilita também a exibição da senha quando o campo está desabilitado', () => {
+  it('exibe a senha visível por padrão e desabilita a alternância quando o campo está desabilitado', () => {
     render(<FormField label="Senha" type="password" disabled defaultValue="segredo" />);
-    const button = screen.getByRole('button', { name: 'Mostrar senha' });
+    const button = screen.getByRole('button', { name: 'Ocultar senha' });
     expect(button.hasAttribute('disabled')).toBe(true);
     fireEvent.click(button);
-    expect(screen.getByLabelText('Senha').getAttribute('type')).toBe('password');
+    expect(screen.getByLabelText('Senha').getAttribute('type')).toBe('text');
   });
 
-  it('foca o campo inválido e permite mostrar a senha com o campo compartilhado', () => {
+  it('foca o campo inválido e permite alternar a visibilidade da senha com o campo compartilhado', () => {
     render(<LoginForm onAuthenticate={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Entrar na minha conta' }));
     expect(document.activeElement).toBe(screen.getByLabelText('CPF ou telefone'));
+    expect(screen.getByLabelText('Senha').getAttribute('type')).toBe('text');
+    fireEvent.click(screen.getByRole('button', { name: 'Ocultar senha' }));
+    expect(screen.getByLabelText('Senha').getAttribute('type')).toBe('password');
     fireEvent.click(screen.getByRole('button', { name: 'Mostrar senha' }));
     expect(screen.getByLabelText('Senha').getAttribute('type')).toBe('text');
   });

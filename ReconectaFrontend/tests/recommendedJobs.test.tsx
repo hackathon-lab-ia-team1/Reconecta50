@@ -73,12 +73,16 @@ afterEach(() => {
 });
 
 describe('Vagas recomendadas por currículo', () => {
-  it('exige um currículo e não mostra vagas genéricas ao abrir a página', () => {
+  it('exige um currículo e não mostra vagas genéricas nem busca catálogo ao abrir a página', () => {
+    vi.stubEnv('VITE_JOBS_URL', 'http://localhost:3001/api/vagas');
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
     render(<App />);
     expect(
-      screen.getByRole('heading', { name: 'Primeiro, deixe seu currículo pronto' }),
+      screen.getByRole('heading', { name: '🔒 Esta área requer seu currículo pronto' }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole('link', { name: 'Criar meu currículo agora (Passo 2) ➜' }),
     ).toBeTruthy();
     expect(screen.queryByRole('article')).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();

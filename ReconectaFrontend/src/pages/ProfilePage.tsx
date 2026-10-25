@@ -9,6 +9,7 @@ import { useAuth } from '../features/auth/useAuth';
 import { ChangePasswordForm } from '../features/auth/components/ChangePasswordForm';
 import { validateProfile } from '../features/career/utils/validateProfile';
 import type { ProfileErrors } from '../features/career/utils/validateProfile';
+import { formatPhoneMask } from '../utils/personalDataValidation';
 import styles from './CareerPage.module.css';
 import profileStyles from './ProfilePage.module.css';
 
@@ -53,6 +54,7 @@ function ProfileEditor() {
   const [errors, setErrors] = useState<ProfileErrors>({});
   const [passwordOpen, setPasswordOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const maxBirthDate = new Date().toISOString().split('T')[0];
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -117,10 +119,11 @@ function ProfileEditor() {
             type="tel"
             autoComplete="tel-national"
             inputMode="tel"
+            placeholder="Ex.: (85) 99999-9999"
             hint="Use o número pelo qual você prefere ser contatado."
             value={draft.phone}
             onChange={(event) => {
-              setDraft({ ...draft, phone: event.target.value });
+              setDraft({ ...draft, phone: formatPhoneMask(event.target.value) });
               setErrors((current) => ({ ...current, phone: undefined }));
               setMessage('');
             }}
@@ -131,6 +134,8 @@ function ProfileEditor() {
             label="Data de nascimento"
             name="birthDate"
             type="date"
+            min="1925-01-01"
+            max={maxBirthDate}
             autoComplete="bday"
             hint="Informe sua data de nascimento."
             value={draft.birthDate}

@@ -12,9 +12,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [checkingSession, setCheckingSession] = useState(!!import.meta.env.VITE_AUTH_ME_URL);
   const [sessionError, setSessionError] = useState('');
   const [isDemo, setDemo] = useState(false);
-  const enterDemo = useCallback(() => setDemo(true), []);
   const [attempt, retry] = useState(0);
   const requestRef = useRef<AbortController | null>(null);
+  const enterDemo = useCallback(() => {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    setCheckingSession(false);
+    setSessionError('');
+    setDemo(true);
+  }, []);
   const retrySession = useCallback(() => retry((value) => value + 1), []);
   const setAuthenticated = useCallback(
     (isAuthenticated: boolean, user: SessionUser | null = null) => {

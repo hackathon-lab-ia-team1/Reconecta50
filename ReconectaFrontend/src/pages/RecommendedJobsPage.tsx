@@ -53,18 +53,19 @@ export function RecommendedJobsPage() {
           seu currículo.
         </p>
       </header>
-      {import.meta.env.VITE_JOBS_URL && <JobCatalog />}
       {!ready ? (
         <section className={styles.empty} aria-labelledby="resume-needed-title">
-          <h2 id="resume-needed-title">Primeiro, deixe seu currículo pronto</h2>
+          <h2 id="resume-needed-title">🔒 Esta área requer seu currículo pronto</h2>
           <p>
-            Conte suas experiências em Meu currículo. Essas informações serão a base das
-            recomendações.
+            Nossa Inteligência Artificial precisa conhecer suas experiências de trabalho para
+            encontrar as vagas compatíveis com seu perfil. Crie seu currículo no Passo 2 para
+            liberar as recomendações.
           </p>
-          <LinkButton to="/curriculo">Preparar meu currículo</LinkButton>
+          <LinkButton to="/curriculo">Criar meu currículo agora (Passo 2) ➜</LinkButton>
         </section>
       ) : (
         <>
+          {import.meta.env.VITE_JOBS_URL && <JobCatalog />}
           <div className={styles.analysis}>
             <h2>Encontre vagas para o seu currículo</h2>
             <p>

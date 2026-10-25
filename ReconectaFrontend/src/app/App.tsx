@@ -16,22 +16,17 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { ErrorPage } from '../pages/ErrorPage';
 import type { ReactNode } from 'react';
 import { JobApplicationProvider } from '../features/jobs/JobApplicationProvider';
-import { Button } from '../components/Button';
+import { ServerConnectingScreen } from '../components/ServerConnectingScreen';
 
 function SessionProviders({ children }: { children: ReactNode }) {
-  const { sessionVersion, checkingSession, sessionError, retrySession } = useAuth();
-  if (checkingSession)
+  const { sessionVersion, checkingSession, sessionError, retrySession, enterDemo } = useAuth();
+  if (checkingSession || sessionError)
     return (
-      <main>
-        <p role="status">Verificando sua sessão…</p>
-      </main>
-    );
-  if (sessionError)
-    return (
-      <main>
-        <p role="alert">{sessionError}</p>
-        <Button onClick={retrySession}>Tentar verificar novamente</Button>
-      </main>
+      <ServerConnectingScreen
+        sessionError={checkingSession ? undefined : sessionError}
+        onRetry={retrySession}
+        onEnterDemo={enterDemo}
+      />
     );
   return (
     <CareerProvider key={sessionVersion}>

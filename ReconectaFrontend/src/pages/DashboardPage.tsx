@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
-  Bot,
   BriefcaseBusiness,
   Check,
-  ExternalLink,
   FileUser,
   GraduationCap,
   HeartHandshake,
@@ -15,82 +12,65 @@ import {
   Smartphone,
   Sparkles,
   UserRound,
-  X,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { LinkButton } from '../components/LinkButton';
-import { Button } from '../components/Button';
 import { useCareer } from '../features/career/useCareer';
 import styles from './DashboardPage.module.css';
 
-interface DigitalCourseItem {
+interface DashboardCourseItem {
   id: string;
+  lessonId: string;
+  badge: string;
   title: string;
   subtitle: string;
+  channel: string;
   duration: string;
-  provider: string;
-  externalUrl: string;
-  youtubeEmbedUrl: string;
-  tips: string[];
   icon: typeof Smartphone;
-  tone: 'green' | 'blue' | 'olive';
+  tone: 'blue' | 'green' | 'olive';
 }
 
-const DIGITAL_COURSES: DigitalCourseItem[] = [
+const DASHBOARD_COURSES: DashboardCourseItem[] = [
   {
-    id: 'informatica-celular',
-    title: 'Informática Básica e Celular',
-    subtitle: 'Dicas para usar o smartphone e computador com segurança.',
-    duration: '15 min · Gratuito',
-    provider: 'Escola Virtual Fundação Bradesco',
-    externalUrl: 'https://www.ev.org.br/areas-de-interesse/tecnologia',
-    youtubeEmbedUrl: 'https://www.youtube.com/embed/2Vv-BfVoq4g',
-    tips: [
-      'Aumente o tamanho da fonte no celular ou no topo desta página usando o botão A+.',
-      'Nunca compartilhe senhas bancárias ou códigos recebidos por SMS com desconhecidos.',
-      'Salve seu currículo em PDF no celular para enviar facilmente quando pedirem.',
-    ],
+    id: 'celular',
+    lessonId: 'celular-sem-segredo',
+    badge: 'AULA EM VÍDEO · INICIANTES',
+    title: '📱 Celular Sem Segredo: Guia para Iniciantes',
+    subtitle:
+      'Aprenda a mexer na tela de toque, aumentar as letras e navegar sem medo de errar ou apagar algo.',
+    channel: 'Bruno Siqueira – Simplificando Celular',
+    duration: 'Aula prática · Gratuita',
     icon: Smartphone,
     tone: 'blue',
   },
   {
-    id: 'whatsapp-profissional',
-    title: 'WhatsApp Profissional',
-    subtitle: 'Como conversar com recrutadores e enviar mensagens claras.',
-    duration: '10 min · Prático',
-    provider: 'Guia Prático Reconecta 50+',
-    externalUrl: 'https://www.youtube.com/results?search_query=como+usar+whatsapp+para+emprego',
-    youtubeEmbedUrl: 'https://www.youtube.com/embed/y881t8ilMyc',
-    tips: [
-      'Comece sempre cumprimentando pelo nome da empresa e dizendo a vaga de interesse.',
-      'Evite áudios muito longos no primeiro contato; prefira mensagens curtas e objetivas.',
-      'Use o botão "Conversar com o RH no WhatsApp" em Minhas Vagas para enviar a mensagem já pronta!',
-    ],
+    id: 'whatsapp',
+    lessonId: 'whatsapp-seguro',
+    badge: 'AULA EM VÍDEO · SEGURANÇA',
+    title: '💬 WhatsApp Básico e Seguro para a Maturidade',
+    subtitle:
+      'Passo a passo calmo para mandar e ouvir áudios, chamadas de vídeo e se proteger de golpes no aplicativo.',
+    channel: 'Mestre Gino – Inclusão Digital',
+    duration: 'Aula prática · Gratuita',
     icon: MessageCircle,
     tone: 'green',
   },
   {
-    id: 'entendendo-ia',
-    title: 'Entendendo a Inteligência Artificial',
-    subtitle: 'Vídeo curto e simples explicando como a IA ajuda no dia a dia.',
-    duration: '8 min · Descomplicado',
-    provider: 'Inclusão Digital 50+',
-    externalUrl:
-      'https://www.youtube.com/results?search_query=inteligencia+artificial+explicada+de+forma+simples',
-    youtubeEmbedUrl: 'https://www.youtube.com/embed/aircAruvnKk',
-    tips: [
-      'A Inteligência Artificial funciona como um assistente que organiza o que você conta com suas palavras.',
-      'Você não precisa saber escrever difícil: basta falar o que fazia no trabalho e a IA formata o currículo.',
-      'Você sempre tem o controle final para revisar e corrigir qualquer texto antes de enviar.',
-    ],
-    icon: Bot,
+    id: 'mercado-50mais',
+    lessonId: 'mercado-trabalho-50mais',
+    badge: 'AULA EM VÍDEO · CARREIRA 50+',
+    title: '💼 O Mercado de Trabalho para Profissionais 50+',
+    subtitle:
+      'Dicas práticas da Maturi para valorizar suas experiências de vida e se destacar com confiança em entrevistas.',
+    channel: 'Maturi – Diversidade Geracional',
+    duration: 'Orientação de carreira',
+    icon: BriefcaseBusiness,
     tone: 'olive',
   },
 ];
 
 export function DashboardPage() {
   const { profile, resume } = useCareer();
-  const [selectedCourse, setSelectedCourse] = useState<DigitalCourseItem | null>(null);
   const profileReady = !!profile.fullName;
   const resumeReady = !!resume.summary;
 
@@ -106,6 +86,7 @@ export function DashboardPage() {
       icon: UserRound,
       done: profileReady,
       featured: !profileReady,
+      locked: false,
       lockedHint: '',
     },
     {
@@ -119,33 +100,36 @@ export function DashboardPage() {
       icon: FileUser,
       done: resumeReady,
       featured: !resumeReady,
+      locked: false,
       lockedHint: '',
     },
     {
       stepNumber: 3,
-      badge: resumeReady ? '✓ Liberado para busca' : 'Passo 3 · Requer currículo',
+      badge: resumeReady ? '✓ Liberado para busca' : '🔒 Passo 3 · Bloqueado',
       title: 'Passo 3: Vagas recomendadas pela IA',
       description:
         'Encontre oportunidades afirmativas 50+ compatíveis com suas experiências e habilidades.',
-      action: 'Ver vagas recomendadas',
-      to: '/vagas-recomendadas',
+      action: resumeReady ? 'Ver vagas recomendadas' : 'Crie seu currículo para desbloquear',
+      to: resumeReady ? '/vagas-recomendadas' : '/curriculo',
       icon: Search,
       done: false,
       featured: resumeReady,
+      locked: !resumeReady,
       lockedHint: !resumeReady ? 'Preencha o Passo 2 para liberar as vagas recomendadas' : '',
     },
     {
       stepNumber: 4,
-      badge: 'Passo 4 · Acompanhamento',
+      badge: resumeReady ? 'Passo 4 · Acompanhamento' : '🔒 Passo 4 · Bloqueado',
       title: 'Passo 4: Minhas candidaturas',
       description:
         'Acompanhe o andamento das seleções após enviar candidaturas e fale direto com o RH pelo WhatsApp.',
-      action: 'Acompanhar minhas candidaturas',
-      to: '/minhas-vagas',
+      action: resumeReady ? 'Acompanhar minhas candidaturas' : 'Requer currículo criado',
+      to: resumeReady ? '/minhas-vagas' : '/curriculo',
       icon: BriefcaseBusiness,
       done: false,
       featured: false,
-      lockedHint: '',
+      locked: !resumeReady,
+      lockedHint: !resumeReady ? 'Complete o Passo 2 para liberar o envio e acompanhamento de vagas' : '',
     },
   ];
 
@@ -220,32 +204,49 @@ export function DashboardPage() {
             const Icon = step.icon;
             return (
               <Link
-                key={step.to}
+                key={step.to + step.stepNumber}
                 to={step.to}
-                className={`${styles.journeyCard} ${step.featured ? styles.journeyCardFeatured : ''} ${
-                  step.done ? styles.journeyCardDone : ''
+                className={`${styles.journeyCard} ${
+                  step.locked
+                    ? styles.journeyCardLocked
+                    : step.featured
+                      ? styles.journeyCardFeatured
+                      : step.done
+                        ? styles.journeyCardDone
+                        : ''
                 }`}
               >
                 <div className={styles.journeyCardTop}>
                   <span
-                    className={`${styles.stepCircle} ${step.done ? styles.done : ''} ${
-                      step.featured ? styles.stepCircleFeatured : ''
+                    className={`${styles.stepCircle} ${
+                      step.locked
+                        ? styles.stepCircleLocked
+                        : step.done
+                          ? styles.done
+                          : step.featured
+                            ? styles.stepCircleFeatured
+                            : ''
                     }`}
                   >
-                    {step.done ? <Check size={18} aria-label="Concluído" /> : step.stepNumber}
+                    {step.locked ? '🔒' : step.done ? <Check size={18} aria-label="Concluído" /> : step.stepNumber}
                   </span>
                   <span
                     className={`${styles.journeyBadge} ${
-                      step.done
-                        ? styles.journeyBadgeDone
-                        : step.featured
-                          ? styles.journeyBadgeFeatured
-                          : ''
+                      step.locked
+                        ? styles.journeyBadgeLocked
+                        : step.done
+                          ? styles.journeyBadgeDone
+                          : step.featured
+                            ? styles.journeyBadgeFeatured
+                            : ''
                     }`}
                   >
                     {step.badge}
                   </span>
-                  <span className={styles.journeyIconWrap} aria-hidden="true">
+                  <span
+                    className={`${styles.journeyIconWrap} ${step.locked ? styles.journeyIconLocked : ''}`}
+                    aria-hidden="true"
+                  >
                     <Icon size={22} />
                   </span>
                 </div>
@@ -256,7 +257,7 @@ export function DashboardPage() {
                     <span>🔒 {step.lockedHint}</span>
                   </div>
                 )}
-                <span className={styles.journeyAction}>
+                <span className={`${styles.journeyAction} ${step.locked ? styles.journeyActionLocked : ''}`}>
                   {step.action}
                   <ArrowUpRight size={19} aria-hidden="true" />
                 </span>
@@ -267,18 +268,24 @@ export function DashboardPage() {
       </section>
 
       <section className={styles.coursesSection} aria-labelledby="digital-courses-title">
-        <div className={styles.sectionHeading}>
-          <span className={styles.eyebrow}>
-            <GraduationCap size={16} aria-hidden="true" /> CAPACITAÇÃO E INCLUSÃO DIGITAL 50+
-          </span>
-          <h2 id="digital-courses-title">Cursos e Dicas Digitais Gratuitas</h2>
-          <p>
-            Aprenda no seu ritmo com conteúdos curtos, gratuitos e pensados para facilitar o seu dia
-            a dia na busca por trabalho.
-          </p>
+        <div className={styles.coursesSectionHeading}>
+          <div>
+            <span className={styles.eyebrow}>
+              <GraduationCap size={16} aria-hidden="true" /> CAPACITAÇÃO E INCLUSÃO DIGITAL 50+
+            </span>
+            <h2 id="digital-courses-title">Cursos e Aulas em Vídeo Gratuitas</h2>
+            <p>
+              Aprenda no seu ritmo com aulas passo a passo gravadas por especialistas em inclusão digital 50+.
+            </p>
+          </div>
+          <Link to="/capacitacao" className={styles.allCoursesButton}>
+            <GraduationCap size={18} aria-hidden="true" />
+            Ver todas as aulas e certificados
+            <ArrowRight size={18} aria-hidden="true" />
+          </Link>
         </div>
         <div className={styles.coursesGrid}>
-          {DIGITAL_COURSES.map((course) => {
+          {DASHBOARD_COURSES.map((course) => {
             const Icon = course.icon;
             return (
               <article key={course.id} className={styles.courseCard}>
@@ -288,77 +295,23 @@ export function DashboardPage() {
                   </span>
                   <span className={styles.courseDuration}>{course.duration}</span>
                 </div>
+                <span className={styles.courseChannelTag}>{course.channel}</span>
                 <h3>{course.title}</h3>
                 <p>{course.subtitle}</p>
                 <div className={styles.courseCardActions}>
-                  <Button variant="secondary" onClick={() => setSelectedCourse(course)}>
-                    <PlayCircle size={18} aria-hidden="true" />
-                    Ver dicas e vídeo
-                  </Button>
-                  <a
-                    href={course.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.externalCourseLink}
+                  <Link
+                    to={`/capacitacao?aula=${course.lessonId}`}
+                    className={styles.courseWatchButton}
                   >
-                    Acessar curso gratuito
-                    <ExternalLink size={16} aria-hidden="true" />
-                  </a>
+                    <PlayCircle size={19} aria-hidden="true" />
+                    Assistir aula na plataforma
+                  </Link>
                 </div>
               </article>
             );
           })}
         </div>
       </section>
-
-      {selectedCourse && (
-        <div
-          className={styles.modalBackdrop}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="course-modal-title"
-        >
-          <div className={styles.modalCard}>
-            <div className={styles.modalHeader}>
-              <div>
-                <span className={styles.eyebrow}>{selectedCourse.provider}</span>
-                <h2 id="course-modal-title">{selectedCourse.title}</h2>
-              </div>
-              <Button
-                variant="secondary"
-                aria-label="Fechar janela de curso"
-                onClick={() => setSelectedCourse(null)}
-              >
-                <X size={18} aria-hidden="true" />
-                Fechar
-              </Button>
-            </div>
-            <p className={styles.modalSubtitle}>{selectedCourse.subtitle}</p>
-            <div className={styles.tipsBox}>
-              <strong>Dicas rápidas para aplicar hoje:</strong>
-              <ul>
-                {selectedCourse.tips.map((tip) => (
-                  <li key={tip}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-            <div className={styles.modalFooter}>
-              <a
-                href={selectedCourse.externalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.modalExternalButton}
-              >
-                Abrir conteúdo completo ({selectedCourse.provider})
-                <ExternalLink size={18} aria-hidden="true" />
-              </a>
-              <Button variant="secondary" onClick={() => setSelectedCourse(null)}>
-                Voltar ao painel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

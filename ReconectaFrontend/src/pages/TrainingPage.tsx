@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Award,
   BriefcaseBusiness,
@@ -107,7 +108,29 @@ const TRAINING_LESSONS: TrainingLesson[] = [
 ];
 
 export function TrainingPage() {
-  const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const aulaParam = searchParams.get('aula');
+  const [activeLessonId, setActiveLessonId] = useState<string | null>(
+    aulaParam && TRAINING_LESSONS.some((l) => l.id === aulaParam) ? aulaParam : null,
+  );
+
+  useEffect(() => {
+    if (aulaParam && TRAINING_LESSONS.some((l) => l.id === aulaParam)) {
+      setActiveLessonId(aulaParam);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [aulaParam]);
+
+  const selectLesson = (id: string | null) => {
+    setActiveLessonId(id);
+    if (id) {
+      setSearchParams({ aula: id }, { replace: true });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  };
+
   const activeLesson = TRAINING_LESSONS.find((lesson) => lesson.id === activeLessonId) ?? null;
 
   return (
@@ -139,7 +162,7 @@ export function TrainingPage() {
             <Button
               variant="secondary"
               className={styles.closePlayerButton}
-              onClick={() => setActiveLessonId(null)}
+              onClick={() => selectLesson(null)}
             >
               <X size={20} aria-hidden="true" />
               Fechar aula
@@ -211,7 +234,7 @@ export function TrainingPage() {
                     <Button
                       variant="secondary"
                       className={styles.closeInlineButton}
-                      onClick={() => setActiveLessonId(null)}
+                      onClick={() => selectLesson(null)}
                     >
                       <X size={19} aria-hidden="true" />
                       Fechar player desta aula
@@ -220,10 +243,7 @@ export function TrainingPage() {
                     <>
                       <Button
                         className={styles.watchButton}
-                        onClick={() => {
-                          setActiveLessonId(lesson.id);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
+                        onClick={() => selectLesson(lesson.id)}
                       >
                         <Play size={19} aria-hidden="true" />
                         ▶ Assistir aula aqui

@@ -112,10 +112,6 @@
     white-space: normal;
     overflow-wrap: anywhere;
   }
-  .navLink:last-child {
-    grid-column: 1 / -1;
-    justify-content: center;
-  }
   .active {
     border-color: var(--green);
   }

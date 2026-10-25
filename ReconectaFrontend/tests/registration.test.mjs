@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateRegistration } from '../src/features/auth/utils/validateRegistration.ts';
+import { formatCpfMask, formatPhoneMask } from '../src/utils/personalDataValidation.ts';
 
 const today = new Date(2026, 9, 20);
 const valid = {
@@ -26,6 +27,21 @@ test('rejeita datas impossíveis, ausentes e futuras', () => {
   for (const birthDate of ['1970-02-30', '', '2030-01-01']) {
     assert.ok(validateRegistration({ ...valid, birthDate }, today).birthDate);
   }
+});
+
+test('rejeita datas com idade superior a 100 anos', () => {
+  for (const birthDate of ['1920-01-01', '1500-05-10', '1924-12-31']) {
+    assert.equal(
+      validateRegistration({ ...valid, birthDate }, today).birthDate,
+      'Confira o ano de nascimento. O ano informado indica mais de 100 anos.',
+    );
+  }
+});
+
+test('formata máscaras de telefone e CPF amigavelmente', () => {
+  assert.equal(formatPhoneMask('85999999999'), '(85) 99999-9999');
+  assert.equal(formatPhoneMask('8532221111'), '(85) 3222-1111');
+  assert.equal(formatCpfMask('52998224725'), '529.982.247-25');
 });
 
 test('aceita data válida em ano bissexto', () => {
