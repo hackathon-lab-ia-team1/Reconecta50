@@ -7,6 +7,9 @@
   margin: 8px 0 30px;
 }
 .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--olive);
   font-size: 0.65rem;
   letter-spacing: 1.6px;
@@ -133,91 +136,299 @@
 .sectionHeading {
   margin-bottom: 20px;
 }
-.sectionHeading h2,
-.nextSteps h2 {
+.sectionHeading h2 {
   font-family: Manrope, sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   letter-spacing: -0.4px;
-  margin: 0 0 10px;
+  margin: 6px 0 8px;
 }
-.sectionHeading p,
-.nextSteps p {
+.sectionHeading p {
   color: var(--teal);
-  line-height: 1.8;
-  font-size: 0.8rem;
+  line-height: 1.75;
+  font-size: 0.84rem;
 }
-.cards {
+.journeyGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
-.nextSteps {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.2fr);
-  gap: 44px;
-  background: #edf2e9;
-  border: 1px solid var(--border);
+.journeyCard {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1.5px solid var(--border);
   border-radius: 18px;
-  margin-top: 32px;
-  padding: 32px;
+  padding: 24px 26px;
+  text-decoration: none;
+  color: var(--forest);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
-.nextSteps h2 {
-  margin-top: 14px;
+.journeyCard:hover {
+  border-color: var(--forest);
+  box-shadow: 0 8px 22px #173f3312;
 }
-.steps {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.journeyCardFeatured {
+  background: #eef6f0;
+  border: 2px solid var(--green);
+  box-shadow: 0 6px 18px rgba(45, 106, 79, 0.1);
 }
-.steps li {
+.journeyCardDone {
+  background: #f9fbf9;
+  border-color: #b7d7c2;
+}
+.journeyCardTop {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid #d4ddce;
+  gap: 10px;
+  margin-bottom: 16px;
 }
-.steps li:last-child {
-  border-bottom: 0;
-}
-.stepNumber {
-  width: 32px;
-  height: 32px;
+.stepCircle {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  background: white;
-  border: 1px solid #d4ddce;
-  font-size: 0.75rem;
+  background: #edf2e9;
+  border: 1.5px solid #c5d4be;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--forest);
+}
+.stepCircleFeatured {
+  background: var(--green);
+  border-color: var(--green);
+  color: #ffffff;
 }
 .done {
   background: var(--green);
   color: white;
   border-color: var(--green);
 }
-.steps a {
-  flex: 1;
-  text-decoration: none;
-  min-width: 0;
-  min-height: 44px;
+.journeyBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f0f3ef;
+  color: var(--teal);
 }
-.steps a:hover strong {
-  text-decoration: underline;
+.journeyBadgeFeatured {
+  background: var(--green);
+  color: #ffffff;
 }
-.steps strong {
-  display: block;
-  font-size: 0.8rem;
-  line-height: 1.5;
+.journeyBadgeDone {
+  background: #dcfce7;
+  color: #14532d;
 }
-.steps a span {
-  display: block;
-  font-size: 0.7rem;
+.journeyIconWrap {
+  margin-left: auto;
+  color: var(--green);
+}
+.journeyCard h3 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.05rem;
+  margin: 0 0 8px;
+  color: var(--forest);
+}
+.journeyCard p {
+  font-size: 0.84rem;
   line-height: 1.7;
   color: var(--teal);
-  margin-top: 4px;
+  margin: 0 0 16px;
+}
+.lockedRequirementBadge {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff8e6;
+  border: 1px solid #ebd08f;
+  color: #784f09;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.journeyAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--green);
+}
+.coursesSection {
+  margin-top: 40px;
+  padding: 32px;
+  background: #edf2e9;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.coursesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.courseCard {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+.courseCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.courseIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+.green {
+  background: #e6f4ea;
+  color: var(--green);
+}
+.blue {
+  background: #e8f1f8;
+  color: var(--blue);
+}
+.olive {
+  background: #f1f4e6;
+  color: var(--olive);
+}
+.courseDuration {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--teal);
+  background: #f3f6f2;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.courseCard h3 {
+  font-family: Manrope, sans-serif;
+  font-size: 1rem;
+  margin: 0 0 8px;
+  color: var(--forest);
+}
+.courseCard p {
+  font-size: 0.83rem;
+  line-height: 1.65;
+  color: var(--teal);
+  margin: 0 0 20px;
+  flex: 1;
+}
+.courseCardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+.externalCourseLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--blue);
+  text-decoration: none;
+}
+.externalCourseLink:hover {
+  text-decoration: underline;
+}
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(15, 35, 27, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.modalCard {
+  width: min(100%, 620px);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.modalHeader h2 {
+  margin: 6px 0 0;
+  font-family: Manrope, sans-serif;
+  font-size: 1.25rem;
+}
+.modalSubtitle {
+  color: var(--teal);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin: 12px 0 18px;
+}
+.tipsBox {
+  background: #eef5ec;
+  border: 1px solid #c5dccd;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.tipsBox strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.88rem;
+  color: var(--forest);
+}
+.tipsBox ul {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--teal);
+}
+.modalFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.modalExternalButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--green);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.modalExternalButton:hover {
+  background: var(--forest);
 }
 @media (max-width: 960px) {
-  .cards {
+  .journeyGrid,
+  .coursesGrid {
     grid-template-columns: minmax(0, 1fr);
   }
   .hero {
@@ -226,9 +437,6 @@
   }
   .illustration {
     display: none;
-  }
-  .nextSteps {
-    gap: 24px;
   }
 }
 @media (max-width: 600px) {
@@ -243,24 +451,7 @@
   .pageHeading p {
     font-size: 0.9rem;
   }
-  .heroLabel {
-    font-size: 0.7rem;
-  }
-  .nextSteps {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 24px 20px;
-  }
-  .steps strong {
-    font-size: 0.9rem;
-  }
-  .steps a span {
-    font-size: 0.8rem;
-  }
-  .sectionHeading p,
-  .nextSteps p {
-    font-size: 0.85rem;
-  }
-  .welcomeTag {
-    font-size: 0.8rem;
+  .coursesSection {
+    padding: 22px 18px;
   }
 }

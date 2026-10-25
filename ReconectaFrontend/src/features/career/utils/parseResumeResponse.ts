@@ -49,6 +49,24 @@ export function parseResumeResponse(value: unknown): ResumeDraft {
         atividades: list(entry.responsabilidades).join('\n'),
       };
     });
+    const education =
+      typeof source.formacao === 'string' && source.formacao.trim()
+        ? source.formacao.trim()
+        : typeof source.education === 'string' && source.education.trim()
+          ? source.education.trim()
+          : undefined;
+    const languages =
+      typeof source.idiomas === 'string' && source.idiomas.trim()
+        ? source.idiomas.trim()
+        : typeof source.languages === 'string' && source.languages.trim()
+          ? source.languages.trim()
+          : undefined;
+    const targetRole =
+      typeof source.cargoDesejado === 'string' && source.cargoDesejado.trim()
+        ? source.cargoDesejado.trim()
+        : typeof source.targetRole === 'string' && source.targetRole.trim()
+          ? source.targetRole.trim()
+          : undefined;
     return parseResumeResponse({
       resume: {
         summary: source.resumoProfissional,
@@ -62,6 +80,9 @@ export function parseResumeResponse(value: unknown): ResumeDraft {
                 .map((item) => `${item.cargo} · ${item.periodo}\n${item.atividades}`)
                 .join('\n\n'),
         skills: list(source.competenciasChave).join(', '),
+        ...(targetRole ? { targetRole } : {}),
+        ...(education ? { education } : {}),
+        ...(languages ? { languages } : {}),
       },
     });
   }

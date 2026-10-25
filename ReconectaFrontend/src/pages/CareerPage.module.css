@@ -196,3 +196,125 @@
     display: block;
   }
 }
+
+.appliedList {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.appliedCard {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+}
+.appliedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #edf2e9;
+  color: var(--green);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.appliedHeader h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.25rem;
+  margin: 4px 0 6px;
+}
+.appliedCompany {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--teal);
+  font-size: 0.9rem;
+  margin: 0;
+}
+.protocolBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.8rem;
+  color: var(--teal);
+  font-weight: 600;
+}
+.appliedMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: var(--teal);
+}
+.appliedMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  background: #f4f6f2;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.timelineStepDone {
+  color: var(--green);
+}
+.timelineStepActive {
+  color: var(--blue);
+}
+.timelineStepNext {
+  color: var(--teal);
+}
+.timelineArrow {
+  color: var(--olive);
+}
+.appliedDetails {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--teal);
+  margin-bottom: 20px;
+}
+.appliedDetails p {
+  margin: 6px 0;
+}
+.appliedActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.whatsappButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  background: #1f7a4c;
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.whatsappButton:hover {
+  background: var(--green);
+}

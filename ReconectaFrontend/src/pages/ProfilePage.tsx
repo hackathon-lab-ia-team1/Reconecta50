@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '../components/Button';
 import { FormField } from '../components/FormField';
 import { LinkButton } from '../components/LinkButton';
@@ -51,6 +51,7 @@ function ProfileEditor() {
   const [draft, setDraft] = useState(profile);
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState<ProfileErrors>({});
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -76,103 +77,123 @@ function ProfileEditor() {
   }
 
   return (
-    <>
-      <div className={profileStyles.grid}>
-        <section
-          className={`${styles.panel} ${profileStyles.panel}`}
-          aria-labelledby="profile-form-title"
+    <div className={profileStyles.grid}>
+      <section
+        className={`${styles.panel} ${profileStyles.panel}`}
+        aria-labelledby="profile-form-title"
+      >
+        <h2 id="profile-form-title">Como podemos apresentar você?</h2>
+        <form ref={formRef} onSubmit={submit} noValidate>
+          <FormField
+            label="E-mail (opcional)"
+            name="email"
+            type="email"
+            autoComplete="email"
+            hint="Será incluído no seu currículo para contato."
+            value={draft.email ?? ''}
+            onChange={(event) => {
+              setDraft((current) => ({ ...current, email: event.target.value }));
+              setErrors((current) => ({ ...current, email: undefined }));
+              setMessage('');
+            }}
+            error={errors.email}
+          />
+          <FormField
+            label="Nome completo"
+            name="fullName"
+            autoComplete="name"
+            value={draft.fullName}
+            onChange={(event) => {
+              setDraft({ ...draft, fullName: event.target.value });
+              setErrors((current) => ({ ...current, fullName: undefined }));
+              setMessage('');
+            }}
+            error={errors.fullName}
+            required
+          />
+          <FormField
+            label="Telefone com DDD"
+            name="phone"
+            type="tel"
+            autoComplete="tel-national"
+            inputMode="tel"
+            hint="Use o número pelo qual você prefere ser contatado."
+            value={draft.phone}
+            onChange={(event) => {
+              setDraft({ ...draft, phone: event.target.value });
+              setErrors((current) => ({ ...current, phone: undefined }));
+              setMessage('');
+            }}
+            error={errors.phone}
+            required
+          />
+          <FormField
+            label="Data de nascimento"
+            name="birthDate"
+            type="date"
+            autoComplete="bday"
+            hint="Informe sua data de nascimento."
+            value={draft.birthDate}
+            onChange={(event) => {
+              setDraft({ ...draft, birthDate: event.target.value });
+              setErrors((current) => ({ ...current, birthDate: undefined }));
+              setMessage('');
+            }}
+            error={errors.birthDate}
+            required
+          />
+          <FormField
+            label="Endereço"
+            name="address"
+            autoComplete="street-address"
+            placeholder="Rua, número, bairro, cidade e estado"
+            value={draft.address}
+            onChange={(event) => {
+              setDraft({ ...draft, address: event.target.value });
+              setErrors((current) => ({ ...current, address: undefined }));
+              setMessage('');
+            }}
+            error={errors.address}
+            required
+          />
+          <div className={styles.actions}>
+            <Button type="submit">Atualizar meu perfil</Button>
+            <LinkButton to="/curriculo" variant="secondary">
+              Ir para meu currículo
+              <ArrowRight size={18} aria-hidden="true" />
+            </LinkButton>
+          </div>
+          {message && (
+            <p className={styles.feedback} role="status">
+              {message}
+            </p>
+          )}
+        </form>
+      </section>
+      <section
+        className={`${styles.panel} ${profileStyles.panel} ${profileStyles.securityPanel}`}
+        aria-labelledby="password-title"
+      >
+        <button
+          type="button"
+          className={profileStyles.securityToggle}
+          aria-expanded={passwordOpen}
+          aria-controls="password-panel-content"
+          onClick={() => setPasswordOpen((current) => !current)}
         >
-          <h2 id="profile-form-title">Como podemos apresentar você?</h2>
-          <form ref={formRef} onSubmit={submit} noValidate>
-            <FormField
-              label="E-mail (opcional)"
-              name="email"
-              type="email"
-              autoComplete="email"
-              hint="Será incluído no seu currículo para contato."
-              value={draft.email ?? ''}
-              onChange={(event) => {
-                setDraft((current) => ({ ...current, email: event.target.value }));
-                setErrors((current) => ({ ...current, email: undefined }));
-                setMessage('');
-              }}
-              error={errors.email}
-            />
-            <FormField
-              label="Nome completo"
-              name="fullName"
-              autoComplete="name"
-              value={draft.fullName}
-              onChange={(event) => {
-                setDraft({ ...draft, fullName: event.target.value });
-                setErrors((current) => ({ ...current, fullName: undefined }));
-                setMessage('');
-              }}
-              error={errors.fullName}
-              required
-            />
-            <FormField
-              label="Telefone com DDD"
-              name="phone"
-              type="tel"
-              autoComplete="tel-national"
-              inputMode="tel"
-              hint="Use o número pelo qual você prefere ser contatado."
-              value={draft.phone}
-              onChange={(event) => {
-                setDraft({ ...draft, phone: event.target.value });
-                setErrors((current) => ({ ...current, phone: undefined }));
-                setMessage('');
-              }}
-              error={errors.phone}
-              required
-            />
-            <FormField
-              label="Data de nascimento"
-              name="birthDate"
-              type="date"
-              autoComplete="bday"
-              hint="Informe sua data de nascimento."
-              value={draft.birthDate}
-              onChange={(event) => {
-                setDraft({ ...draft, birthDate: event.target.value });
-                setErrors((current) => ({ ...current, birthDate: undefined }));
-                setMessage('');
-              }}
-              error={errors.birthDate}
-              required
-            />
-            <FormField
-              label="Endereço"
-              name="address"
-              autoComplete="street-address"
-              placeholder="Rua, número, bairro, cidade e estado"
-              value={draft.address}
-              onChange={(event) => {
-                setDraft({ ...draft, address: event.target.value });
-                setErrors((current) => ({ ...current, address: undefined }));
-                setMessage('');
-              }}
-              error={errors.address}
-              required
-            />
-            <div className={styles.actions}>
-              <Button type="submit">Atualizar meu perfil</Button>
-              <LinkButton to="/curriculo" variant="secondary">
-                Ir para meu currículo
-                <ArrowRight size={18} aria-hidden="true" />
-              </LinkButton>
-            </div>
-            {message && (
-              <p className={styles.feedback} role="status">
-                {message}
-              </p>
-            )}
-          </form>
-        </section>
-        <section
-          className={`${styles.panel} ${profileStyles.panel}`}
-          aria-labelledby="password-title"
+          <span className={profileStyles.securityTitle}>
+            🔐 Segurança da conta (Deseja alterar sua senha?)
+          </span>
+          <span className={profileStyles.securityHint} aria-hidden="true">
+            {passwordOpen ? 'Clique para recolher' : 'Clique para abrir'}
+            {passwordOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </span>
+        </button>
+        <div
+          id="password-panel-content"
+          className={`${profileStyles.securityBody} ${passwordOpen ? profileStyles.securityBodyOpen : ''}`}
+          data-read-skip={!passwordOpen ? '' : undefined}
+          onFocusCapture={() => setPasswordOpen(true)}
         >
           <h2 id="password-title">Alterar senha</h2>
           <p>
@@ -180,8 +201,8 @@ function ProfileEditor() {
             alterados.
           </p>
           <ChangePasswordForm onChangePassword={changePasswordDemo} />
-        </section>
-      </div>
-    </>
+        </div>
+      </section>
+    </div>
   );
 }

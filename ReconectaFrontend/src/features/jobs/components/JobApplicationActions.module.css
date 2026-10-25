@@ -1,6 +1,12 @@
 .container {
   margin-top: 24px;
 }
+.quickQuestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
 .messageEditor {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

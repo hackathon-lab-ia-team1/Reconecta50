@@ -30,10 +30,14 @@ export function JobApplicationActions({
     attempted,
     resume: submittedResume,
     profile: submittedProfile,
+    availability = 'Imediata',
+    salaryExpectation = '',
     prepare,
     confirm,
+    confirmQuickApplication,
     showManualChannel,
     updateMessage,
+    updateQuestionnaire,
     copyMessage,
   } = useJobApplication(job, resume, profile);
   const panelRef = useRef<HTMLHeadingElement>(null);
@@ -76,6 +80,24 @@ export function JobApplicationActions({
                   ? 'Confira antes de enviar sua candidatura'
                   : 'Continue sua inscrição'}
           </h3>
+          <div className={styles.quickQuestions}>
+            <FormField
+              label="Disponibilidade para início"
+              value={availability}
+              placeholder="Ex.: Imediata ou em 15 dias"
+              onChange={(event) => {
+                updateQuestionnaire('availability', event.target.value);
+              }}
+            />
+            <FormField
+              label="Pretensão salarial (opcional)"
+              value={salaryExpectation}
+              placeholder={`Ex.: Compatível com a vaga (${job.compensation})`}
+              onChange={(event) => {
+                updateQuestionnaire('salaryExpectation', event.target.value);
+              }}
+            />
+          </div>
           {plan.type === 'automatic' && (
             <>
               <p>{plan.summary}</p>
@@ -117,9 +139,19 @@ export function JobApplicationActions({
                 Esta inscrição precisa ser concluída no site de origem. Preencha as etapas
                 solicitadas por lá.
               </p>
-              <a className={styles.link} href={plan.url} target="_blank" rel="noopener noreferrer">
-                Continuar inscrição no site de origem (abre em nova aba)
-              </a>
+              <div className={styles.actions}>
+                <a
+                  className={styles.link}
+                  href={plan.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Continuar inscrição no site de origem (abre em nova aba)
+                </a>
+                <Button variant="secondary" onClick={confirmQuickApplication}>
+                  Confirmar inscrição na vaga
+                </Button>
+              </div>
             </>
           )}
           {(plan.type === 'email' || plan.type === 'whatsapp') && (
@@ -167,6 +199,11 @@ export function JobApplicationActions({
                   Copiar mensagem
                 </Button>
               </div>
+              <div className={styles.actions}>
+                <Button onClick={confirmQuickApplication} disabled={pending}>
+                  Confirmar inscrição na vaga
+                </Button>
+              </div>
               {plan.type === 'email' ? (
                 <p>
                   Copie a mensagem e envie pelo Gmail ou pela plataforma de e-mail que você usa.
@@ -180,7 +217,16 @@ export function JobApplicationActions({
               )}
             </>
           )}
-          {plan.type === 'manual' && <p>{plan.instructions}</p>}
+          {plan.type === 'manual' && (
+            <>
+              <p>{plan.instructions}</p>
+              <div className={styles.actions}>
+                <Button onClick={confirmQuickApplication} disabled={pending}>
+                  Confirmar inscrição na vaga
+                </Button>
+              </div>
+            </>
+          )}
         </section>
       )}
       {applicationId && (

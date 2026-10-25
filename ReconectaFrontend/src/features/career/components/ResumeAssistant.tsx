@@ -4,10 +4,17 @@ import { Mic, Square, Sparkles, Trash2 } from 'lucide-react';
 import { Button } from '../../../components/Button';
 import { TextAreaField } from '../../../components/TextAreaField';
 import { useAudioRecorder } from '../hooks/useAudioRecorder';
+import { interviewSections } from '../types/resumeInterview';
 import type { ResumeDraft } from '../types/career';
 import type { GenerateResume, ResumeGenerationInput } from '../types/resumeGeneration';
 import styles from './ResumeAssistant.module.css';
 import { ResumeVoiceInterview } from './ResumeVoiceInterview';
+
+const LOADING_MESSAGES = [
+  'Lendo suas experiências...',
+  'A IA está formalizando suas competências profissionais...',
+  'Quase pronto! Organizando a apresentação do seu currículo...',
+] as const;
 
 interface ResumeAssistantProps {
   onGenerate: GenerateResume;
@@ -32,6 +39,7 @@ export function ResumeAssistant({
   );
   const [text, setText] = useState('');
   const [pending, setPending] = useState(false);
+  const [loadingStage, setLoadingStage] = useState(0);
   const [error, setError] = useState('');
   const [completed, setCompleted] = useState(false);
   const [voiceBusy, setVoiceBusy] = useState(false);
@@ -45,6 +53,24 @@ export function ResumeAssistant({
       request.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (!pending) {
+      setLoadingStage(0);
+      return;
+    }
+    setLoadingStage(0);
+    const stage1Timer = window.setTimeout(() => {
+      setLoadingStage(1);
+    }, 5000);
+    const stage2Timer = window.setTimeout(() => {
+      setLoadingStage(2);
+    }, 12000);
+    return () => {
+      window.clearTimeout(stage1Timer);
+      window.clearTimeout(stage2Timer);
+    };
+  }, [pending]);
 
   function cancelGeneration() {
     requestRef.current?.abort();
@@ -109,11 +135,17 @@ export function ResumeAssistant({
         </div>
       </div>
       <div className={styles.guidance}>
-        <strong>Não sabe por onde começar?</strong>
-        <p>
-          Conte qual era sua função, onde trabalhou, por quanto tempo e o que você aprendeu. Pode
-          falar do seu jeito.
-        </p>
+        <strong>Roteiro simples em 4 pontos (fale ou escreva do seu jeito):</strong>
+        <ol className={styles.fourQuestionsList}>
+          {interviewSections.map((item, idx) => (
+            <li key={item.key}>
+              <strong>
+                {idx + 1}. {item.title}:
+              </strong>{' '}
+              {item.hint}
+            </li>
+          ))}
+        </ol>
       </div>
       <div className={styles.modes} role="group" aria-label="Como contar sua experiência">
         <Button
@@ -173,14 +205,18 @@ export function ResumeAssistant({
             <>
               <p>
                 A gravação começa quando você tocar no botão e permitir o microfone. Fale no seu
-                ritmo e toque em Concluir gravação quando terminar. Nada é enviado enquanto você
-                grava.
+                ritmo e toque para parar quando terminar. Nada é enviado enquanto você grava.
               </p>
               <div className={styles.actions}>
                 {recording.status === 'recording' ? (
-                  <Button variant="secondary" onClick={recording.stop}>
+                  <Button
+                    variant="secondary"
+                    className={styles.stopRecordingButton}
+                    aria-label="Concluir gravação"
+                    onClick={recording.stop}
+                  >
                     <Square size={18} aria-hidden="true" />
-                    Concluir gravação
+                    ⏹️ Parar gravação e salvar texto
                   </Button>
                 ) : (
                   <Button
@@ -217,14 +253,28 @@ export function ResumeAssistant({
                   </Button>
                 )}
               </div>
-              <p role="status">
-                {recording.status === 'recording'
-                  ? 'Microfone ligado. Pode contar sua experiência.'
-                  : recording.status === 'ready'
-                    ? 'Gravação pronta. Você pode ouvir antes de enviar.'
-                    : recording.status === 'stopping'
-                      ? 'Concluindo a gravação.'
-                      : ''}
+              <p
+                role="status"
+                className={
+                  recording.status === 'recording'
+                    ? styles.recordingBanner
+                    : recording.status === 'ready'
+                      ? styles.capturedBanner
+                      : undefined
+                }
+              >
+                {recording.status === 'recording' ? (
+                  <>
+                    <span className={styles.pulsingDot} aria-hidden="true" />
+                    <span>🔴 Gravando sua fala... Fale no seu ritmo</span>
+                  </>
+                ) : recording.status === 'ready' ? (
+                  '✓ Áudio capturado com sucesso! Você pode ouvir abaixo antes de enviar.'
+                ) : recording.status === 'stopping' ? (
+                  'Concluindo a gravação.'
+                ) : (
+                  ''
+                )}
               </p>
               {recording.status === 'recording' && (
                 <p aria-live="off">Tempo gravado: {recording.duration} segundos.</p>
@@ -249,7 +299,7 @@ export function ResumeAssistant({
       ) : (
         <TextAreaField
           label="Conte sua experiência para a IA"
-          hint="Escreva com suas palavras, sem se preocupar com a formatação. Até 12.000 caracteres."
+          hint="Responda às 4 perguntas acima com suas palavras (função desejada, onde trabalhou e o que fazia, habilidades e escolaridade). Até 12.000 caracteres."
           value={text}
           onChange={(event) => {
             setText(event.target.value);
@@ -264,9 +314,8 @@ export function ResumeAssistant({
         <>
           <p className={styles.notice}>
             Ao escolher Criar currículo com IA, você envia apenas o texto acima ou, quando houver
-            suporte, a gravação ao serviço de criação de currículo, quando ele estiver disponível. O
-            novo currículo substituirá o atual automaticamente. Confira o resultado e ajuste o que
-            precisar.
+            suporte, a gravação ao serviço de criação de currículo. O novo currículo substituirá o
+            atual automaticamente. Confira o resultado e ajuste o que precisar.
           </p>
           <div className={styles.actions}>
             <Button
@@ -288,8 +337,9 @@ export function ResumeAssistant({
           </div>
           {manualAction && <div className={styles.actions}>{manualAction}</div>}
           {pending && (
-            <p role="status">
-              Estamos organizando as informações que você contou. Isso pode levar alguns instantes.
+            <p role="status" className={styles.loadingProgressBanner}>
+              <span className={styles.loadingSpinner} aria-hidden="true" />
+              <span>{LOADING_MESSAGES[loadingStage]}</span>
             </p>
           )}
           {error && (

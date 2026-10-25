@@ -34,7 +34,10 @@ export const generateResume: GenerateResume = async (input, signal) => {
     const text = input.text.trim();
     if (!text || text.length > 12000)
       throw new Error('Conte sua experiência em um texto de até 12.000 caracteres.');
-    body = JSON.stringify({ historico: { ultimaExperiencia: { atividadesTextoOuAudio: text } } });
+    body = JSON.stringify({
+      historico: { ultimaExperiencia: { atividadesTextoOuAudio: text } },
+      ...(input.sections ? { sections: input.sections } : {}),
+    });
   }
 
   const controller = new AbortController();

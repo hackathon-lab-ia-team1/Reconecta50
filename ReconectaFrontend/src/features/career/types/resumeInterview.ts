@@ -2,43 +2,33 @@ export const interviewSections = [
   {
     key: 'targetRole',
     title: 'Função que você procura',
-    hint: 'Qual trabalho você gostaria de conseguir? Pode dizer mais de uma função.',
-  },
-  {
-    key: 'education',
-    title: 'Formação e cursos',
-    hint: 'Conte sua escolaridade, cursos, instituições e quando estudou, se lembrar.',
-  },
-  {
-    key: 'languages',
-    title: 'Idiomas',
-    hint: 'Quais idiomas você fala e qual seu nível em cada um? Pode informar apenas português.',
+    hint: 'Qual trabalho gostaria de conseguir? Pode citar mais de uma função.',
   },
   {
     key: 'experience',
     title: 'Experiências profissionais',
-    hint: 'Conte seus cargos, empresas, períodos e o que fazia em cada trabalho.',
+    hint: 'Onde trabalhou e o que fazia — destaque principal da sua trajetória!',
   },
   {
     key: 'skills',
-    title: 'Habilidades',
-    hint: 'Conte o que sabe fazer, como Excel, Word, atendimento ou organização.',
+    title: 'Suas habilidades',
+    hint: 'O que sabe fazer bem: atendimento, organização, cuidado, trabalho em equipe, etc.',
   },
   {
-    key: 'additionalContacts',
-    title: 'Outros meios de contato',
-    hint: 'Digite ou cole os links do LinkedIn, portfólio ou outros contatos profissionais, se tiver.',
+    key: 'education',
+    title: 'Formação e escolaridade',
+    hint: 'Até onde estudou e cursos práticos que realizou.',
   },
 ] as const;
+
 export type InterviewField = (typeof interviewSections)[number]['key'];
 export type ResumeInterview = Record<InterviewField, string>;
+
 export const emptyInterview: ResumeInterview = {
   targetRole: '',
-  education: '',
-  languages: '',
   experience: '',
   skills: '',
-  additionalContacts: '',
+  education: '',
 };
 
 export function interviewToText(values: ResumeInterview) {

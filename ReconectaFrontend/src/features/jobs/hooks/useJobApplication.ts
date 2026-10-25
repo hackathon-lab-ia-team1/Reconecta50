@@ -66,6 +66,7 @@ export function useJobApplication(
         applicationRevision,
         resume: { ...resume },
         profile: { ...profile },
+        job: { ...job },
       });
     } catch (cause) {
       if (store.isCurrent(job.id, controller))
@@ -101,7 +102,11 @@ export function useJobApplication(
       );
       if (!store.isCurrent(job.id, controller)) return;
       if (result.status === 'submitted')
-        store.update(job.id, { applicationId: result.applicationId });
+        store.update(job.id, {
+          applicationId: result.applicationId,
+          job: { ...job },
+          appliedAt: new Date().toLocaleDateString('pt-BR'),
+        });
       else store.update(job.id, { plan: { type: 'external', url: result.url }, attempted: false });
     } catch (cause) {
       if (store.isCurrent(job.id, controller))
@@ -124,6 +129,7 @@ export function useJobApplication(
       applicationRevision,
       resume: { ...resume },
       profile: { ...profile },
+      job: { ...job },
       error: '',
       message: '',
     });
@@ -134,6 +140,26 @@ export function useJobApplication(
     if (current.plan?.type !== 'email' && !(current.plan?.type === 'whatsapp' && field === 'body'))
       return;
     store.update(job.id, { plan: { ...current.plan, [field]: value }, message: '' });
+  }
+
+  function updateQuestionnaire(field: 'availability' | 'salaryExpectation', value: string) {
+    store.update(job.id, { [field]: value });
+  }
+
+  function confirmQuickApplication() {
+    const current = store.get(job.id);
+    if (current.pending || current.applicationId) return;
+    const protocol = `REC-${crypto.randomUUID().slice(0, 6).toUpperCase()}`;
+    store.update(job.id, {
+      applicationId: protocol,
+      job: { ...job },
+      resume: { ...resume },
+      profile: { ...profile },
+      availability: current.availability?.trim() || 'Imediata',
+      salaryExpectation: current.salaryExpectation?.trim() || 'Compatível com o valor da vaga',
+      appliedAt: new Date().toLocaleDateString('pt-BR'),
+      error: '',
+    });
   }
 
   async function copyMessage() {
@@ -157,5 +183,14 @@ export function useJobApplication(
     }
   }
 
-  return { ...state, prepare, confirm, showManualChannel, updateMessage, copyMessage };
+  return {
+    ...state,
+    prepare,
+    confirm,
+    confirmQuickApplication,
+    showManualChannel,
+    updateMessage,
+    updateQuestionnaire,
+    copyMessage,
+  };
 }
