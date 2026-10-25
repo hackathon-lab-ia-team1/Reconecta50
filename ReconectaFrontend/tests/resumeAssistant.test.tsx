@@ -60,32 +60,38 @@ describe('Criação assistida de currículo', () => {
     render(
       <ResumeAssistant onGenerate={vi.fn().mockResolvedValue(resume)} onGenerated={vi.fn()} />,
     );
-    fireEvent.change(screen.getByLabelText('Conte sua experiência para a IA'), {
+    fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
+      target: { value: 'Recepcionista' },
+    });
+    fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
       target: { value: 'Minha primeira experiência.' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com IA' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
     await screen.findByText(
-      'Currículo atualizado automaticamente. Você pode revisar e editar os campos abaixo.',
+      'Currículo atualizado. Confira as informações e baixe o PDF quando estiver pronto.',
     );
-    fireEvent.change(screen.getByLabelText('Conte sua experiência para a IA'), {
+    fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
       target: { value: 'Outra experiência.' },
     });
     expect(
       screen.queryByText(
-        'Currículo atualizado automaticamente. Você pode revisar e editar os campos abaixo.',
+        'Currículo atualizado. Confira as informações e baixe o PDF quando estiver pronto.',
       ),
     ).toBeNull();
   });
+
   it('não envia nada sem a integração e mantém a alternativa de texto', async () => {
     vi.stubEnv('VITE_RESUME_GENERATE_URL', '');
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
     render(<ResumeAssistant onGenerate={generateResume} onGenerated={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Escrever minha experiência' }));
-    fireEvent.change(screen.getByLabelText('Conte sua experiência para a IA'), {
+    fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
+      target: { value: 'Recepcionista' },
+    });
+    fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
       target: { value: 'Trabalhei como recepcionista.' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com IA' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
     await waitFor(() =>
       expect(screen.getByRole('alert').textContent).toContain('Nenhum áudio ou texto foi enviado'),
     );
@@ -97,14 +103,22 @@ describe('Criação assistida de currículo', () => {
     render(
       <ResumeAssistant onGenerate={vi.fn().mockResolvedValue(resume)} onGenerated={onGenerated} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Escrever minha experiência' }));
-    fireEvent.change(screen.getByLabelText('Conte sua experiência para a IA'), {
+    fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
+      target: { value: 'Recepcionista' },
+    });
+    fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
       target: { value: 'Trabalhei com atendimento.' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com IA' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
     await waitFor(() => expect(onGenerated).toHaveBeenCalledTimes(1));
     expect(screen.queryByRole('button', { name: 'Usar este currículo' })).toBeNull();
-    expect(onGenerated).toHaveBeenCalledExactlyOnceWith(resume);
+    expect(onGenerated).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        summary: resume.summary,
+        role: resume.role,
+        targetRole: 'Recepcionista',
+      }),
+    );
   });
 
   it('não altera o currículo quando uma geração cancelada retorna depois', async () => {
@@ -120,10 +134,13 @@ describe('Criação assistida de currículo', () => {
         onGenerated={onGenerated}
       />,
     );
-    fireEvent.change(screen.getByLabelText('Conte sua experiência para a IA'), {
+    fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
+      target: { value: 'Recepcionista' },
+    });
+    fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
       target: { value: 'Minha experiência.' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com IA' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
     fireEvent.click(screen.getByRole('button', { name: 'Cancelar criação' }));
     await act(async () => complete(resume));
     expect(onGenerated).not.toHaveBeenCalled();

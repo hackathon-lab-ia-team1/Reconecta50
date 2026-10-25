@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   BriefcaseBusiness,
   FileUser,
+  GraduationCap,
   LayoutDashboard,
   LogOut,
   Search,
@@ -25,6 +26,7 @@ const navigation = [
   { to: '/curriculo', label: 'Meu currículo', tabTitle: 'Meu currículo', icon: FileUser },
   { to: '/vagas-recomendadas', label: 'Vagas recomendadas', tabTitle: 'Vagas', icon: Search },
   { to: '/minhas-vagas', label: 'Minhas vagas', tabTitle: 'Minhas vagas', icon: BriefcaseBusiness },
+  { to: '/capacitacao', label: 'Capacitação', tabTitle: 'Capacitação', icon: GraduationCap },
 ];
 
 export function WorkspaceLayout() {

@@ -42,11 +42,13 @@ describe('Dashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Preencher currículo manualmente' }));
     const summary = screen.getByLabelText('Apresentação profissional') as HTMLTextAreaElement;
     fireEvent.change(summary, { target: { value: 'Meu rascunho manual.' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Escrever minha experiência' }));
-    fireEvent.change(screen.getByLabelText('Conte sua experiência para a IA'), {
+    fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
+      target: { value: 'Recepcionista' },
+    });
+    fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
       target: { value: 'Meu relato profissional.' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com IA' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
     expect((summary.closest('fieldset') as HTMLFieldSetElement).disabled).toBe(true);
     expect(
       screen.getByRole('button', { name: 'Baixar currículo em PDF' }).hasAttribute('disabled'),
@@ -98,11 +100,13 @@ describe('Dashboard', () => {
       ),
     );
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Escrever minha experiência' }));
-    fireEvent.change(screen.getByLabelText('Conte sua experiência para a IA'), {
+    fireEvent.change(screen.getByLabelText('Texto revisável: 1. Função que você procura'), {
+      target: { value: 'Recepcionista' },
+    });
+    fireEvent.change(screen.getByLabelText('Texto revisável: 2. Experiências profissionais'), {
       target: { value: 'Trabalhei como recepcionista.' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com IA' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
     await screen.findByRole('textbox', { name: 'Função ou trabalho' });
     expect(
       screen
@@ -171,10 +175,10 @@ describe('Dashboard', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('navega pelas três áreas com indicação da página atual e preserva a fonte', () => {
+  it('navega pelas áreas do painel com indicação da página atual e preserva a fonte', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: 'Diminuir texto' }));
-    for (const label of ['Meu perfil', 'Meu currículo', 'Minhas vagas']) {
+    for (const label of ['Meu perfil', 'Meu currículo', 'Minhas vagas', 'Capacitação']) {
       navigate(label);
       expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(label);
       expect(screen.getByRole('heading', { level: 1 })).toBe(document.activeElement);
