@@ -127,7 +127,7 @@ export function ResumeInterviewSection({
         >
           {recording.status === 'recording'
             ? '⏹️ Parar gravação e salvar texto'
-            : `🎙️ Gravar áudio: ${title}`}
+            : `🔴 Gravar áudio`}
         </Button>
       </div>
       {busy && (

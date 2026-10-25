@@ -1,9 +1,39 @@
+.assistantWrapper {
+  margin-bottom: 28px;
+}
+.assistantIntro {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 0 0;
+  border-bottom: 0;
+  padding: 26px 30px 10px;
+}
+.assistantIntro h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  margin: 0 0 8px;
+  color: var(--forest);
+}
+.assistantIntro p {
+  font-size: 0.86rem;
+  line-height: 1.75;
+  color: var(--teal);
+  margin: 0;
+}
 .assistant {
   background: #edf2e9;
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 30px;
   margin-bottom: 28px;
+}
+.assistantWrapper .assistant {
+  border-radius: 0 0 18px 18px;
+  margin-bottom: 0;
 }
 .heading {
   display: flex;
@@ -19,7 +49,7 @@
   display: grid;
   place-items: center;
   color: var(--green);
-  background: white;
+  background: #edf5ee;
   border-radius: 14px;
   flex-shrink: 0;
 }
@@ -34,51 +64,11 @@
   line-height: 1.8;
   color: var(--teal);
 }
-.guidance {
-  margin: 22px 0;
-  padding: 18px 20px;
-  background: #ffffffd9;
-  border: 1px solid #d5e2d0;
-  border-radius: 12px;
-}
-.guidance strong {
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: var(--forest);
-}
-.fourQuestionsList {
-  margin: 10px 0 0;
-  padding-left: 20px;
-  display: grid;
-  gap: 6px;
-  font-size: 0.83rem;
-  line-height: 1.6;
-  color: var(--teal);
-}
-.modes,
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin: 20px 0;
-}
-.modes button[aria-pressed='true'] {
-  border-color: var(--green);
-  background: var(--green);
-  color: white;
-}
-.modes button[aria-pressed='true']:hover:not(:disabled) {
-  border-color: var(--forest);
-  background: var(--forest);
-  color: white;
-}
-.recorder {
-  padding-block: 4px;
-}
-.recorder audio {
-  display: block;
-  width: min(100%, 500px);
-  margin-top: 16px;
 }
 .assistant .notice {
   font-size: 0.75rem;
@@ -230,13 +220,13 @@
   margin: 16px 0;
 }
 @media (max-width: 600px) {
-  .assistant {
-    padding: 24px 18px;
+  .assistant,
+  .assistantIntro {
+    padding: 20px 18px;
   }
-  .heading {
+  .assistantIntro {
     flex-direction: column;
   }
-  .modes > *,
   .actions > * {
     width: 100%;
   }

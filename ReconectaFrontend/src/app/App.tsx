@@ -9,6 +9,7 @@ import { ProfilePage } from '../pages/ProfilePage';
 import { ResumePage } from '../pages/ResumePage';
 import { MyJobsPage } from '../pages/MyJobsPage';
 import { RecommendedJobsPage } from '../pages/RecommendedJobsPage';
+import { TrainingPage } from '../pages/TrainingPage';
 import { AuthProvider } from '../features/auth/AuthProvider';
 import { useAuth } from '../features/auth/useAuth';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -60,6 +61,7 @@ function AppRoutes() {
           <Route path="/curriculo" element={<ResumePage />} />
           <Route path="/minhas-vagas" element={<MyJobsPage />} />
           <Route path="/vagas-recomendadas" element={<RecommendedJobsPage />} />
+          <Route path="/capacitacao" element={<TrainingPage />} />
         </Route>
         <Route path="*" element={<ErrorPage variant="notFound" />} />
       </Routes>

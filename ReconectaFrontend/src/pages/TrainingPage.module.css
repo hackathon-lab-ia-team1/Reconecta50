@@ -1,0 +1,277 @@
+.playerSection {
+  background: #173f33;
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 26px 28px;
+  margin-bottom: 30px;
+  box-shadow: 0 12px 32px rgba(23, 63, 51, 0.2);
+}
+
+.playerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.playerChannelBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #b7e4c7;
+  font-size: 0.76rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.playerHeader h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.35rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+.closePlayerButton {
+  background: #ffffff !important;
+  color: #173f33 !important;
+  border-color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.videoFrameWrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0b1f19;
+  border: 2px solid #40916c;
+}
+
+.videoFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.playerHint {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #d8f3dc;
+}
+
+.playerFooter {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.externalPlayerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #b7e4c7;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.externalPlayerLink:hover {
+  color: #ffffff;
+}
+
+.cardSecondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--teal);
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.cardSecondaryLink:hover {
+  color: var(--forest);
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.lessonCard {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.lessonCard:hover {
+  border-color: var(--green);
+  box-shadow: 0 8px 24px rgba(23, 63, 51, 0.08);
+}
+
+.lessonCardActive {
+  background: #eef6f0;
+  border: 2px solid var(--green);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.iconBox {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+}
+
+.green {
+  background: #e6f4ea;
+  color: var(--green);
+}
+
+.blue {
+  background: #e8f1f8;
+  color: var(--blue);
+}
+
+.olive {
+  background: #f1f4e6;
+  color: var(--olive);
+}
+
+.gold {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.lessonBadge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #edf2e9;
+  color: var(--forest);
+}
+
+.lessonCard h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.18rem;
+  line-height: 1.35;
+  margin: 0 0 10px;
+  color: var(--forest);
+}
+
+.channelLine {
+  font-size: 0.84rem;
+  color: var(--forest);
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.handleTag {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #f0f4ef;
+  color: var(--teal);
+}
+
+.description {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--teal);
+  margin: 0 0 16px;
+}
+
+.highlightsList {
+  margin: 0 0 24px;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  color: var(--forest);
+}
+
+.cardActions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.watchButton,
+.closeInlineButton {
+  width: 100%;
+  min-height: 52px;
+  justify-content: center;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.externalCertLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 2px solid var(--green);
+  color: var(--green);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.externalCertLink:hover {
+  background: var(--green);
+  color: #ffffff;
+}
+
+@media (max-width: 960px) {
+  .cardsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .playerSection {
+    padding: 20px 18px;
+  }
+}
