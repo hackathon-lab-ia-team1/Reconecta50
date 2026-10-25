@@ -1,15 +1,13 @@
-// ─── Tipos de autenticação alinhados ao contrato do frontend ───
-
 export interface LoginRequest {
-  identifier: string;   // CPF ou telefone (apenas dígitos)
+  identifier: string;
   password: string;
 }
 
 export interface RegisterRequest {
   fullName: string;
-  phone: string;        // apenas dígitos
-  cpf: string;          // apenas dígitos (11)
-  birthDate: string;    // YYYY-MM-DD
+  phone: string;
+  cpf: string;
+  birthDate: string;
   address: string;
   password: string;
 }
@@ -27,7 +25,7 @@ export interface UserRecord {
 
 /**
  * Dados públicos do usuário retornados pela API.
- * Limitado a id e nome — NÃO inclui CPF, telefone, endereço ou data de nascimento.
+ * Limitado a id e fullName para não expor PII desnecessariamente.
  */
 export interface PublicUser {
   id: string;
@@ -36,7 +34,6 @@ export interface PublicUser {
 
 /**
  * Dados do usuário disponíveis na sessão (server-side).
- * Usado internamente pelo middleware; nunca enviado diretamente ao cliente.
  */
 export interface SessionUser {
   id: string;

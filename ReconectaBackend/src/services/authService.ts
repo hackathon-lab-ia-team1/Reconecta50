@@ -4,8 +4,6 @@ import { findUserByIdentifier, findUserById, cpfExists, phoneExists, addUser } f
 import { createSession, getSessionUserId, deleteSession } from '../data/sessionStore.js';
 import { hashPassword, verifyPassword, generateSessionId } from './crypto.js';
 
-// ─── Login ───
-
 export interface LoginResult {
   success: true;
   sessionId: string;
@@ -28,8 +26,6 @@ export async function loginUser(req: LoginRequest): Promise<LoginResult> {
   return { success: true, sessionId, user: toPublicUser(user) };
 }
 
-// ─── Registro ───
-
 export async function registerUser(req: RegisterRequest): Promise<LoginResult> {
   if (cpfExists(req.cpf)) {
     throw new AuthError('Já existe uma conta com este CPF.', 409);
@@ -50,13 +46,10 @@ export async function registerUser(req: RegisterRequest): Promise<LoginResult> {
   };
   addUser(newUser);
 
-  // Já loga automaticamente após registro
   const sessionId = generateSessionId();
   createSession(sessionId, newUser.id);
   return { success: true, sessionId, user: toPublicUser(newUser) };
 }
-
-// ─── Sessão ───
 
 export function getUserBySession(sessionId: string): SessionUser | null {
   const userId = getSessionUserId(sessionId);
@@ -76,9 +69,6 @@ export function destroySession(sessionId: string): void {
   deleteSession(sessionId);
 }
 
-// ─── Helpers ───
-
-/** Dados completos — usado apenas internamente pelo middleware. */
 function toSessionUser(u: UserRecord): SessionUser {
   return {
     id: u.id,
@@ -90,7 +80,6 @@ function toSessionUser(u: UserRecord): SessionUser {
   };
 }
 
-/** Dados limitados — retornados ao cliente via API. */
 function toPublicUser(u: UserRecord): PublicUser {
   return {
     id: u.id,
@@ -99,7 +88,10 @@ function toPublicUser(u: UserRecord): PublicUser {
 }
 
 export class AuthError extends Error {
-  constructor(message: string, public statusCode: number) {
+  constructor(
+    message: string,
+    public statusCode: number
+  ) {
     super(message);
     this.name = 'AuthError';
   }

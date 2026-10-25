@@ -1,33 +1,27 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-/**
- * Store de sessões com persistência em arquivo JSON.
- *
- * - Cada sessão mapeia sessionId → userId.
- * - As sessões têm TTL configurável (padrão: 7 dias).
- * - Sessões expiradas são removidas automaticamente na leitura.
- */
-
 interface SessionEntry {
   userId: string;
-  createdAt: number; // timestamp em ms
+  createdAt: number;
 }
 
-const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
-const DATA_DIR = process.env.DATA_DIR || path.resolve(process.cwd(), 'data');
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const DEFAULT_DATA_DIR = path.resolve(process.cwd(), 'node_modules', '.cache', 'reconecta-data');
+const DATA_DIR = process.env.DATA_DIR || DEFAULT_DATA_DIR;
 const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
 
 let sessions: Record<string, SessionEntry> = {};
 
-/** Carrega sessões do disco. */
 export function loadSessions(): void {
   try {
     if (fs.existsSync(SESSIONS_FILE)) {
       const raw = fs.readFileSync(SESSIONS_FILE, 'utf-8');
-      sessions = JSON.parse(raw);
-      // Limpa sessões expiradas ao carregar
-      pruneExpired();
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        sessions = parsed;
+        pruneExpired();
+      }
     }
   } catch (err) {
     console.error('[sessionStore] Erro ao carregar sessions.json:', err);
@@ -67,7 +61,6 @@ export function getSessionUserId(sessionId: string): string | null {
   const entry = sessions[sessionId];
   if (!entry) return null;
 
-  // Verifica expiração
   if (Date.now() - entry.createdAt > SESSION_TTL_MS) {
     delete sessions[sessionId];
     persist();
