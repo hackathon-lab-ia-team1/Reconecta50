@@ -2,7 +2,6 @@ import type { Request, Response } from 'express';
 import {
   loginUser,
   registerUser,
-  getPasswordHintByIdentifier,
   getPublicUserBySession,
   getUserBySession,
   destroySession,
@@ -102,8 +101,12 @@ export function handleLembreteSenha(req: Request, res: Response): void {
       return;
     }
 
-    const hint = getPasswordHintByIdentifier(identifier);
-    res.json({ success: true, hint: hint || null });
+    res.json({
+      success: true,
+      hint: null,
+      message:
+        'Se houver uma conta associada aos dados informados, siga as orientações de recuperação de acesso.',
+    });
   } catch (error) {
     console.error('[auth/lembrete-senha] Erro inesperado:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });

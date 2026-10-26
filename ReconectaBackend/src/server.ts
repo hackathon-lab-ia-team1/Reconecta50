@@ -56,7 +56,9 @@ app.get('/api/health', (_req: Request, res: Response) => {
 app.use(routes);
 
 initDatabase();
-seedDatabase();
+if (process.env.NODE_ENV !== 'production') {
+  seedDatabase();
+}
 loadUsers();
 loadSessions();
 loadCandidaturas();

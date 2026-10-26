@@ -1,7 +1,8 @@
 import cors from 'cors';
 
-function buildAllowedOrigins(): string[] {
+function buildAllowedOrigins(): Set<string> {
   const origins = new Set<string>([
+    'https://reconecta50-five.vercel.app',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
   ]);
@@ -9,16 +10,13 @@ function buildAllowedOrigins(): string[] {
   const envOrigins = process.env.CORS_ORIGIN;
   if (envOrigins) {
     for (const o of envOrigins.split(',')) {
-      const trimmed = o.trim();
+      const trimmed = o.trim().replace(/\/+$/, '');
       if (trimmed) origins.add(trimmed);
     }
   }
 
-  return [...origins];
+  return origins;
 }
-
-const allowedOrigins = buildAllowedOrigins();
-const VERCEL_ORIGIN_REGEX = /\.vercel\.app$/;
 
 export const corsMiddleware = cors({
   origin: (origin, callback) => {
@@ -27,7 +25,10 @@ export const corsMiddleware = cors({
       return;
     }
 
-    if (allowedOrigins.includes(origin) || VERCEL_ORIGIN_REGEX.test(origin)) {
+    const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+    const allowedOrigins = buildAllowedOrigins();
+
+    if (allowedOrigins.has(normalizedOrigin)) {
       callback(null, true);
     } else {
       callback(new Error(`Origem não autorizada pelo CORS: ${origin}`));

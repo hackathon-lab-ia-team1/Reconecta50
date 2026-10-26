@@ -115,16 +115,11 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
 
   const sessionId = req.cookies?.[SESSION_COOKIE];
   const user = sessionId ? getPublicUserBySession(sessionId) : null;
-  const userId =
-    user?.id ||
-    (typeof body.userId === 'string' && body.userId.trim() ? body.userId.trim() : undefined);
+  const userId = user?.id;
   const vaga = VAGAS_OPORTUNIDADES.find((v) => v.id === jobId);
 
   const protocolNumber = crypto.randomUUID().slice(0, 8).toUpperCase();
-  const applicationId =
-    typeof body.applicationId === 'string' && body.applicationId.trim()
-      ? body.applicationId.trim()
-      : `REC-${protocolNumber}`;
+  const applicationId = `REC-${protocolNumber}`;
 
   const whatsappPhone =
     typeof body.whatsappPhone === 'string' && body.whatsappPhone.trim()
@@ -184,24 +179,12 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
     createdAt,
   };
 
-  if (userId) {
-    const deleteOldStmt = db.prepare(
-      'DELETE FROM candidaturas WHERE jobId = ? AND userId = ? AND applicationId != ?'
-    );
-    deleteOldStmt.run(jobId, userId, applicationId);
-  } else {
-    const deleteOldAnonStmt = db.prepare(
-      'DELETE FROM candidaturas WHERE jobId = ? AND userId IS NULL AND applicationId != ?'
-    );
-    deleteOldAnonStmt.run(jobId, applicationId);
-  }
-
-  const upsertStmt = db.prepare(`
-    INSERT OR REPLACE INTO candidaturas (
+  const insertStmt = db.prepare(`
+    INSERT INTO candidaturas (
       applicationId, userId, jobId, jobTitle, company, data, createdAt
     ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
-  upsertStmt.run(
+  insertStmt.run(
     applicationId,
     userId ?? null,
     novaCandidatura.jobId,
