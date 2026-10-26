@@ -1,0 +1,262 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 860" width="100%" height="100%" style="background:#0b0f17; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <defs>
+    <linearGradient id="headerGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14532d" />
+      <stop offset="50%" stop-color="#166534" />
+      <stop offset="100%" stop-color="#052e16" />
+    </linearGradient>
+
+    <filter id="shadowBox" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.4" />
+    </filter>
+
+    <marker id="arrowData" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M 0 0.5 L 6 3.5 L 0 6.5 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arrowAi" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M 0 0.5 L 6 3.5 L 0 6.5 z" fill="#f97316" />
+    </marker>
+    <marker id="arrowAuth" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M 0 0.5 L 6 3.5 L 0 6.5 z" fill="#c084fc" />
+    </marker>
+  </defs>
+
+  <style>
+    .cat-title { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+    .box-title { font-size: 13.5px; font-weight: 700; fill: #f8fafc; }
+    .box-sub { font-size: 11px; fill: #94a3b8; }
+    .box-badge { font-size: 9.5px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+
+  <!-- Header -->
+  <rect x="30" y="25" width="1140" height="70" rx="12" fill="url(#headerGrad2)" />
+  <text x="50" y="52" fill="#86efac" font-size="12" font-weight="700" letter-spacing="1">MAPA DE SERVIÇOS &amp; FLUXO DE DADOS</text>
+  <text x="50" y="74" fill="#ffffff" font-size="19" font-weight="800">Topologia de Infraestrutura &amp; Pipeline de IA — Reconecta 50+</text>
+  <text x="50" y="87" fill="#cbd5e1" font-size="11.5">Arquitetura desacoplada, redundância ativa de IA (Groq ➔ Gemini) e geração client-side de documentos</text>
+
+  <!-- ================= GROUP 1: IDENTIDADE & ACESSO (ROXO) ================= -->
+  <g transform="translate(30, 115)">
+    <rect x="0" y="0" width="1140" height="96" rx="10" fill="#131127" stroke="#7c3aed" stroke-width="1.4" stroke-dasharray="6,4" />
+    <text x="18" y="18" fill="#c084fc" class="cat-title">IDENTIDADE, SESSÃO &amp; SEGURANÇA</text>
+
+    <!-- Card 1.1 -->
+    <g transform="translate(18, 28)">
+      <rect x="0" y="0" width="345" height="56" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">🍪 Sessões em Cookies httpOnly</text>
+      <text x="14" y="42" class="box-sub">Proteção contra XSS • SameSite Lax • TTL 7 dias</text>
+      <rect x="235" y="10" width="95" height="18" rx="4" fill="#312e81" />
+      <text x="242" y="22" fill="#c7d2fe" class="box-badge">cookie-parser</text>
+    </g>
+
+    <!-- Card 1.2 -->
+    <g transform="translate(385, 28)">
+      <rect x="0" y="0" width="345" height="56" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">🔒 Hash de Senha Seguro</text>
+      <text x="14" y="42" class="box-sub">Criptografia forte de credenciais com salt</text>
+      <rect x="250" y="10" width="80" height="18" rx="4" fill="#312e81" />
+      <text x="258" y="22" fill="#c7d2fe" class="box-badge">bcryptjs</text>
+    </g>
+
+    <!-- Card 1.3 -->
+    <g transform="translate(755, 28)">
+      <rect x="0" y="0" width="365" height="56" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">🛡️ CORS com Origem Restrita</text>
+      <text x="14" y="42" class="box-sub">Vercel Oficial + Localhost • credentials: true</text>
+      <rect x="255" y="10" width="95" height="18" rx="4" fill="#312e81" />
+      <text x="262" y="22" fill="#c7d2fe" class="box-badge">corsMiddleware</text>
+    </g>
+  </g>
+
+  <!-- ================= GROUP 2: COMPUTAÇÃO & APLICAÇÃO (VERDE) ================= -->
+  <g transform="translate(30, 227)">
+    <rect x="0" y="0" width="1140" height="106" rx="10" fill="#0c1d1a" stroke="#059669" stroke-width="1.4" stroke-dasharray="6,4" />
+    <text x="18" y="18" fill="#34d399" class="cat-title">COMPUTAÇÃO, EDGE &amp; HOSPEDAGEM</text>
+
+    <!-- Card 2.1 -->
+    <g transform="translate(18, 28)">
+      <rect x="0" y="0" width="265" height="66" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="12" y="24" class="box-title">☁️ Frontend Vercel</text>
+      <text x="12" y="42" class="box-sub">React 19 • Vite 6 • CDN Global</text>
+      <text x="12" y="56" fill="#a7f3d0" font-size="9.5" font-family="monospace">reconecta50-five.vercel.app</text>
+    </g>
+
+    <!-- Card 2.2 -->
+    <g transform="translate(300, 28)">
+      <rect x="0" y="0" width="265" height="66" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="12" y="24" class="box-title">⚙️ Backend Render</text>
+      <text x="12" y="42" class="box-sub">Node 22 • Express 5 • Linux</text>
+      <text x="12" y="56" fill="#a7f3d0" font-size="9.5" font-family="monospace">reconectabackend.onrender.com</text>
+    </g>
+
+    <!-- Card 2.3 -->
+    <g transform="translate(585, 28)">
+      <rect x="0" y="0" width="265" height="66" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="12" y="24" class="box-title">📄 jsPDF Engine</text>
+      <text x="12" y="42" class="box-sub">Geração 100% no navegador</text>
+      <text x="12" y="56" fill="#a7f3d0" font-size="9.5" font-family="monospace">Zero carga no servidor</text>
+    </g>
+
+    <!-- Card 2.4 -->
+    <g transform="translate(870, 28)">
+      <rect x="0" y="0" width="250" height="66" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="12" y="24" class="box-title">🔌 Cold-Start Poller</text>
+      <text x="12" y="42" class="box-sub">Monitoramento /api/health</text>
+      <text x="12" y="56" fill="#fde047" font-size="9.5" font-weight="600">Acolhimento ao acordar</text>
+    </g>
+  </g>
+
+  <!-- ================= GROUP 3: INTELIGÊNCIA ARTIFICIAL & GUARDRAILS (LARANJA / MAGENTA) ================= -->
+  <g transform="translate(30, 349)">
+    <rect x="0" y="0" width="1140" height="114" rx="10" fill="#24101b" stroke="#e11d48" stroke-width="1.4" stroke-dasharray="6,4" />
+    <text x="18" y="18" fill="#fb7185" class="cat-title">PIPELINE DE IA, DUAL-ENGINE &amp; GUARDRAILS ÉTICOS</text>
+
+    <!-- Card 3.1 -->
+    <g transform="translate(18, 28)">
+      <rect x="0" y="0" width="265" height="74" rx="8" fill="#4c0519" stroke="#f43f5e" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="12" y="22" class="box-title">🛡️ Blindagem de Prompt</text>
+      <text x="12" y="40" class="box-sub">Sanitização de tags &lt;relato&gt;</text>
+      <text x="12" y="54" class="box-sub">Anti-Jailbreak • Limite 2k chars</text>
+      <rect x="12" y="58" width="130" height="14" rx="3" fill="#881337" />
+      <text x="16" y="69" fill="#fecdd3" font-size="8.5" font-weight="600">Segurança de Entrada</text>
+    </g>
+
+    <!-- Card 3.2 -->
+    <g transform="translate(300, 28)">
+      <rect x="0" y="0" width="265" height="74" rx="8" fill="#7c2d12" stroke="#ea580c" stroke-width="1.4" filter="url(#shadowBox)" />
+      <text x="12" y="22" class="box-title">⚡ Groq Cloud (1º Motor)</text>
+      <text x="12" y="40" class="box-sub">Llama 3.3 70B • Latência &lt; 1s</text>
+      <text x="12" y="54" class="box-sub">Timeout estrito de 7 segundos</text>
+      <rect x="12" y="58" width="135" height="14" rx="3" fill="#9a3412" />
+      <text x="16" y="69" fill="#ffedd5" font-size="8.5" font-weight="600">Primário: Resposta Rápida</text>
+    </g>
+
+    <!-- Card 3.3 -->
+    <g transform="translate(585, 28)">
+      <rect x="0" y="0" width="265" height="74" rx="8" fill="#581c87" stroke="#a855f7" stroke-width="1.4" filter="url(#shadowBox)" />
+      <text x="12" y="22" class="box-title">🧠 Gemini Flash (Fallback)</text>
+      <text x="12" y="40" class="box-sub">Gemini 2.5/1.5 Flash • SDK Google</text>
+      <text x="12" y="54" class="box-sub">Ativação automática em cascata</text>
+      <rect x="12" y="58" width="145" height="14" rx="3" fill="#6b21a8" />
+      <text x="16" y="69" fill="#f3e8ff" font-size="8.5" font-weight="600">Garantia de Disponibilidade</text>
+    </g>
+
+    <!-- Card 3.4 -->
+    <g transform="translate(870, 28)">
+      <rect x="0" y="0" width="250" height="74" rx="8" fill="#1f2937" stroke="#4b5563" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="12" y="22" class="box-title">✍️ Edição Manual (Contingência)</text>
+      <text x="12" y="40" class="box-sub">Se ambas as IAs oscilarem</text>
+      <text x="12" y="54" class="box-sub">O usuário nunca fica bloqueado</text>
+      <rect x="12" y="58" width="125" height="14" rx="3" fill="#374151" />
+      <text x="16" y="69" fill="#e5e7eb" font-size="8.5" font-weight="600">Autonomia Preservada</text>
+    </g>
+  </g>
+
+  <!-- ================= GROUP 4: DADOS & ARMAZENAMENTO (AZUL) ================= -->
+  <g transform="translate(30, 480)">
+    <rect x="0" y="0" width="1140" height="96" rx="10" fill="#082032" stroke="#0284c7" stroke-width="1.4" stroke-dasharray="6,4" />
+    <text x="18" y="18" fill="#38bdf8" class="cat-title">DADOS, PERSISTÊNCIA &amp; MATCHING</text>
+
+    <!-- Card 4.1 -->
+    <g transform="translate(18, 28)">
+      <rect x="0" y="0" width="345" height="56" rx="8" fill="#0c4a6e" stroke="#0ea5e9" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">💾 SQLite Nativo (node:sqlite)</text>
+      <text x="14" y="42" class="box-sub">reconecta50.db persistente • Zero gyp/C++</text>
+      <rect x="235" y="10" width="95" height="18" rx="4" fill="#0369a1" />
+      <text x="242" y="22" fill="#e0f2fe" class="box-badge">Node 22 Nativo</text>
+    </g>
+
+    <!-- Card 4.2 -->
+    <g transform="translate(385, 28)">
+      <rect x="0" y="0" width="345" height="56" rx="8" fill="#0c4a6e" stroke="#0ea5e9" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">💼 Catálogo 40 Vagas 50+</text>
+      <text x="14" y="42" class="box-sub">Vagas afirmativas, acolhedoras e inclusivas</text>
+      <rect x="250" y="10" width="80" height="18" rx="4" fill="#0369a1" />
+      <text x="258" y="22" fill="#e0f2fe" class="box-badge">Seed Vagas</text>
+    </g>
+
+    <!-- Card 4.3 -->
+    <g transform="translate(755, 28)">
+      <rect x="0" y="0" width="365" height="56" rx="8" fill="#0c4a6e" stroke="#0ea5e9" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">🎯 Algoritmo de Matching</text>
+      <text x="14" y="42" class="box-sub">Recomendação por afinidade de trajetória e soft skills</text>
+      <rect x="260" y="10" width="90" height="18" rx="4" fill="#0369a1" />
+      <text x="268" y="22" fill="#e0f2fe" class="box-badge">IA + Heurística</text>
+    </g>
+  </g>
+
+  <!-- ================= GROUP 5: ACESSIBILIDADE 50+ (AMARELO) ================= -->
+  <g transform="translate(30, 592)">
+    <rect x="0" y="0" width="1140" height="96" rx="10" fill="#201a08" stroke="#ca8a04" stroke-width="1.4" stroke-dasharray="6,4" />
+    <text x="18" y="18" fill="#facc15" class="cat-title">ACESSIBILIDADE ATIVA, VOZ &amp; USABILIDADE 50+</text>
+
+    <!-- Card 5.1 -->
+    <g transform="translate(18, 28)">
+      <rect x="0" y="0" width="345" height="56" rx="8" fill="#713f12" stroke="#eab308" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">🎙️ Entrada de Relato por Voz</text>
+      <text x="14" y="42" class="box-sub">Fale sua história • Gravação com Web Speech API</text>
+      <rect x="250" y="10" width="80" height="18" rx="4" fill="#854d0e" />
+      <text x="258" y="22" fill="#fef08a" class="box-badge">Web Speech</text>
+    </g>
+
+    <!-- Card 5.2 -->
+    <g transform="translate(385, 28)">
+      <rect x="0" y="0" width="345" height="56" rx="8" fill="#713f12" stroke="#eab308" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">🔊 Leitor de Tela em Voz Alta</text>
+      <text x="14" y="42" class="box-sub">Ouça cada seção, instrução e vaga recomendada</text>
+      <rect x="250" y="10" width="80" height="18" rx="4" fill="#854d0e" />
+      <text x="260" y="22" fill="#fef08a" class="box-badge">TTS Nativo</text>
+    </g>
+
+    <!-- Card 5.3 -->
+    <g transform="translate(755, 28)">
+      <rect x="0" y="0" width="365" height="56" rx="8" fill="#713f12" stroke="#eab308" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="24" class="box-title">🔠 Ajuste Tipográfico A- / A+</text>
+      <text x="14" y="42" class="box-sub">Zoom de fonte acessível persistido em contexto global</text>
+      <rect x="265" y="10" width="85" height="18" rx="4" fill="#854d0e" />
+      <text x="272" y="22" fill="#fef08a" class="box-badge">FontScale</text>
+    </g>
+  </g>
+
+  <!-- ================= GROUP 6: MONITORAMENTO & QUALIDADE (CIAN/CINZA) ================= -->
+  <g transform="translate(30, 704)">
+    <rect x="0" y="0" width="1140" height="88" rx="10" fill="#0f172a" stroke="#475569" stroke-width="1.4" stroke-dasharray="6,4" />
+    <text x="18" y="18" fill="#94a3b8" class="cat-title">QUALIDADE, TESTES &amp; CI/CD</text>
+
+    <!-- Card 6.1 -->
+    <g transform="translate(18, 26)">
+      <rect x="0" y="0" width="345" height="50" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="22" class="box-title">🚀 GitHub Actions CI/CD</text>
+      <text x="14" y="38" class="box-sub">Deploy automático na Vercel e Render por branch</text>
+    </g>
+
+    <!-- Card 6.2 -->
+    <g transform="translate(385, 26)">
+      <rect x="0" y="0" width="345" height="50" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="22" class="box-title">🧪 Vitest + React Testing Library</text>
+      <text x="14" y="38" class="box-sub">Validação unitária e de componentes de acessibilidade</text>
+    </g>
+
+    <!-- Card 6.3 -->
+    <g transform="translate(755, 26)">
+      <rect x="0" y="0" width="365" height="50" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1.2" filter="url(#shadowBox)" />
+      <text x="14" y="22" class="box-title">🔧 ESLint 9 + TypeScript Estrito</text>
+      <text x="14" y="38" class="box-sub">Zero tipos any, verificações estritas e lint contínuo</text>
+    </g>
+  </g>
+
+  <!-- Flow Legend & Summary Bar -->
+  <g transform="translate(30, 806)">
+    <rect x="0" y="0" width="1140" height="40" rx="8" fill="#090d16" stroke="#1f2937" stroke-width="1.2" />
+
+    <line x1="20" y1="20" x2="45" y2="20" stroke="#38bdf8" stroke-width="2" />
+    <text x="52" y="24" fill="#cbd5e1" font-size="10.5">Fluxo de Dados HTTPS / REST</text>
+
+    <line x1="260" y1="20" x2="285" y2="20" stroke="#f97316" stroke-width="2" stroke-dasharray="4,2" />
+    <text x="292" y="24" fill="#cbd5e1" font-size="10.5">Cascata Dual-Engine (Groq ➔ Gemini)</text>
+
+    <line x1="560" y1="20" x2="585" y2="20" stroke="#c084fc" stroke-width="2" />
+    <text x="592" y="24" fill="#cbd5e1" font-size="10.5">Sessão Segura httpOnly</text>
+
+    <text x="810" y="24" fill="#94a3b8" font-size="10.5">Resiliência: <tspan fill="#34d399" font-weight="700">Fallback Automático</tspan> • <tspan fill="#38bdf8" font-weight="700">Edição Manual Preservada</tspan></text>
+  </g>
+</svg>
