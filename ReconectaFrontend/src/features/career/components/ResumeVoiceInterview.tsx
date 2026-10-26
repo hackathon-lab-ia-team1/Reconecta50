@@ -10,7 +10,7 @@ import styles from './ResumeAssistant.module.css';
 
 const LOADING_MESSAGES = [
   'Lendo suas experiências...',
-  'A IA está formalizando suas competências profissionais...',
+  'A IA está organizando suas competências...',
   'Quase pronto! Organizando a apresentação do seu currículo...',
 ] as const;
 
@@ -146,16 +146,12 @@ export function ResumeVoiceInterview({
           featured={section.key === 'experience'}
           onActive={setActive}
           onChange={(value) => {
-            setValues((current) => ({ ...current, [section.key]: value }));
+            setValues((current) => ({ ...current, [section.key]: value.slice(0, 1000) }));
             setError('');
             setCompleted(false);
           }}
         />
       ))}
-      <p>
-        Confira os textos antes de finalizar. O currículo criado atualizará a prévia abaixo
-        automaticamente.
-      </p>
       <div className={styles.actions}>
         <Button disabled={pending || active !== null} onClick={() => void generate()}>
           {pending ? LOADING_MESSAGES[loadingStage] : 'Criar currículo com os textos das etapas'}

@@ -5,6 +5,7 @@ export interface RegistrationValues {
   birthDate: string;
   address: string;
   password: string;
+  passwordHint?: string;
 }
 
 export type RegistrationErrors = Partial<Record<keyof RegistrationValues, string>>;

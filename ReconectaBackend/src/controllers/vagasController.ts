@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { VAGAS_AFIRMATIVAS } from '../data/mocks/vagas.mock.js';
-import { recomendarVagasComIA } from '../services/geminiService.js';
+import { recomendarVagasComIA, AIUnavailableError } from '../services/geminiService.js';
 
 export function handleListarVagas(_req: Request, res: Response): void {
   res.json({
@@ -31,6 +31,14 @@ export async function handleRecomendarVagas(req: Request, res: Response): Promis
     const resultado = await recomendarVagasComIA(resume);
     res.json(resultado);
   } catch (error) {
+    if (error instanceof AIUnavailableError) {
+      res.status(error.statusCode).json({
+        sucesso: false,
+        erro: error.message,
+        error: error.message,
+      });
+      return;
+    }
     console.error('[vagas/recomendadas] Erro:', error);
     res.status(500).json({ error: 'Não foi possível analisar as vagas no momento.' });
   }

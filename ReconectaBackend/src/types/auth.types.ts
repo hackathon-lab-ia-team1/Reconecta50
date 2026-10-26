@@ -10,6 +10,7 @@ export interface RegisterRequest {
   birthDate: string;
   address: string;
   password: string;
+  passwordHint?: string;
 }
 
 export interface UserRecord {
@@ -20,6 +21,7 @@ export interface UserRecord {
   birthDate: string;
   address: string;
   passwordHash: string;
+  passwordHint?: string;
   createdAt: string;
 }
 

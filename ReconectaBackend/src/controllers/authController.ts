@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import {
   loginUser,
   registerUser,
+  getPasswordHintByIdentifier,
   getPublicUserBySession,
   getUserBySession,
   destroySession,
@@ -43,7 +44,7 @@ export async function handleLogin(req: Request, res: Response): Promise<void> {
 
 export async function handleRegister(req: Request, res: Response): Promise<void> {
   try {
-    const { fullName, phone, cpf, birthDate, address, password } = req.body ?? {};
+    const { fullName, phone, cpf, birthDate, address, password, passwordHint } = req.body ?? {};
 
     if (!fullName || !phone || !cpf || !birthDate || !address || !password) {
       res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
@@ -67,6 +68,11 @@ export async function handleRegister(req: Request, res: Response): Promise<void>
       return;
     }
 
+    const sanitizedHint =
+      typeof passwordHint === 'string' && passwordHint.trim()
+        ? passwordHint.trim().slice(0, 200)
+        : undefined;
+
     const result = await registerUser({
       fullName: String(fullName).trim(),
       phone: phoneDigits,
@@ -74,6 +80,7 @@ export async function handleRegister(req: Request, res: Response): Promise<void>
       birthDate: String(birthDate),
       address: String(address).trim(),
       password,
+      ...(sanitizedHint ? { passwordHint: sanitizedHint } : {}),
     });
     res.cookie(SESSION_COOKIE, result.sessionId, COOKIE_OPTIONS);
     res.status(201).json({ success: true, user: result.user });
@@ -83,6 +90,22 @@ export async function handleRegister(req: Request, res: Response): Promise<void>
       return;
     }
     console.error('[auth/register] Erro inesperado:', error);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
+  }
+}
+
+export function handleLembreteSenha(req: Request, res: Response): void {
+  try {
+    const { identifier } = req.body ?? {};
+    if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
+      res.status(400).json({ error: 'Informe seu CPF ou telefone.' });
+      return;
+    }
+
+    const hint = getPasswordHintByIdentifier(identifier);
+    res.json({ success: true, hint: hint || null });
+  } catch (error) {
+    console.error('[auth/lembrete-senha] Erro inesperado:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 }

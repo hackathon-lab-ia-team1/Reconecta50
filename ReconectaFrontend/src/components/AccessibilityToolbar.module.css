@@ -27,18 +27,33 @@
 }
 
 .accessibility .read-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  border: 0;
-  font-weight: 500;
+  padding: 6px 14px;
+  background: #e6f4ea;
+  border: 1.5px solid #8bc39e;
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--forest);
+  white-space: nowrap;
+}
+
+.accessibility .read-button[aria-pressed='true'] {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #991b1b;
+}
+
+.accessibility .read-button:hover:not(:disabled) {
+  background: #d3ecd9;
+  border-color: var(--green);
+  color: var(--forest);
 }
 
 @media (max-width: 760px) {
   .accessibility-label {
-    display: none;
-  }
-  .accessibility .read-button span {
     display: none;
   }
 }
@@ -51,6 +66,9 @@
     min-width: 44px;
     min-height: 44px;
   }
+  .accessibility .read-button {
+    padding: 8px 16px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -62,12 +80,9 @@
   .accessibility-label {
     display: none;
   }
-  .accessibility .read-button span {
-    display: inline;
-  }
 }
 
-.accessibility-button:hover:not(:disabled):not(.share-button) {
+.accessibility-button:hover:not(:disabled):not(.share-button):not(.read-button) {
   background: #f0f3f2;
   color: var(--teal);
 }

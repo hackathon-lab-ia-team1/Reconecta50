@@ -1,4 +1,5 @@
 import { useContext, useEffect, useSyncExternalStore } from 'react';
+import { AuthContext } from '../../auth/AuthContext';
 import type { CareerProfile, ResumeDraft } from '../../career/types/career';
 import { JobApplicationContext } from '../JobApplicationContext';
 import type { JobOpportunity } from '../types/job';
@@ -20,6 +21,7 @@ export function useJobApplication(
   profile: CareerProfile,
 ) {
   const context = useContext(JobApplicationContext);
+  const auth = useContext(AuthContext);
   if (!context)
     throw new Error('useJobApplication deve ser usado dentro de JobApplicationProvider.');
   const store = context;
@@ -101,13 +103,16 @@ export function useJobApplication(
         controller.signal,
       );
       if (!store.isCurrent(job.id, controller)) return;
-      if (result.status === 'submitted')
+      if (result.status === 'submitted') {
         store.update(job.id, {
           applicationId: result.applicationId,
           job: { ...job },
           appliedAt: new Date().toLocaleDateString('pt-BR'),
         });
-      else store.update(job.id, { plan: { type: 'external', url: result.url }, attempted: false });
+        store.persistCandidaturaToBackend(job.id, auth?.user?.id);
+      } else {
+        store.update(job.id, { plan: { type: 'external', url: result.url }, attempted: false });
+      }
     } catch (cause) {
       if (store.isCurrent(job.id, controller))
         store.update(job.id, {
@@ -160,6 +165,7 @@ export function useJobApplication(
       appliedAt: new Date().toLocaleDateString('pt-BR'),
       error: '',
     });
+    store.persistCandidaturaToBackend(job.id, auth?.user?.id);
   }
 
   async function copyMessage() {

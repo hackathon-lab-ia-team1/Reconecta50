@@ -8,12 +8,23 @@ export function parseResumeResponse(value: unknown): ResumeDraft {
       !('curriculo' in value) ||
       !value.curriculo ||
       typeof value.curriculo !== 'object'
-    )
-      throw new Error('O serviço não devolveu um currículo válido. Tente novamente.');
-    if (!('origem' in value) || value.origem !== 'gemini_api')
+    ) {
+      const customErr =
+        'erro' in value && typeof value.erro === 'string' && value.erro.trim()
+          ? value.erro.trim()
+          : 'O serviço não devolveu um currículo válido. Tente novamente.';
+      throw new Error(customErr);
+    }
+    if (
+      'origem' in value &&
+      (value.origem === 'mock_desenvolvimento' ||
+        typeof value.origem !== 'string' ||
+        !value.origem.trim())
+    ) {
       throw new Error(
         'O serviço retornou um currículo de demonstração, sem geração real por IA. Seu currículo anterior foi preservado. Use o preenchimento manual ou tente novamente quando a IA estiver disponível.',
       );
+    }
     const source = value.curriculo as Record<string, unknown>;
     const experiences = source.experienciaFormatada;
     if (!Array.isArray(experiences) || experiences.length === 0 || experiences.length > 50)

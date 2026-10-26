@@ -51,7 +51,7 @@ export interface CurriculoEstruturado {
 
 export interface RespostaCurriculo {
   sucesso: boolean;
-  origem: 'gemini_api' | 'mock_desenvolvimento';
+  origem: 'groq_ai' | 'gemini_api' | 'mock_desenvolvimento';
   curriculo: CurriculoEstruturado;
   aviso?: string;
 }

@@ -81,7 +81,12 @@ export function JobCard({ job, recommendation, actions }: JobCardProps) {
         </ul>
       </section>
       <div className={styles.recruiter}>
-        <h3>Contato do recrutador</h3>
+        <div className={styles.recruiterHeader}>
+          <h3>Contato do recrutador</h3>
+          <span className={styles.simulationBadge}>
+            (Canal oficial de RH · Simulação de contato)
+          </span>
+        </div>
         <p>
           <strong>{job.recruiter.name}</strong>
         </p>

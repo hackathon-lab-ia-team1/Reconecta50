@@ -116,6 +116,26 @@
   border: 1px solid var(--border);
   border-radius: 12px;
 }
+.recruiterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.recruiterHeader h3 {
+  margin: 0;
+}
+.simulationBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--teal);
+  background: #f4f6f2;
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
 .recruiter p {
   font-size: 0.8rem;
   line-height: 1.8;

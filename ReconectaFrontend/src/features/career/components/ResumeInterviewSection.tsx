@@ -1,10 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../../../components/Button';
 import { TextAreaField } from '../../../components/TextAreaField';
 import { useAudioRecorder } from '../hooks/useAudioRecorder';
 import { useSpeechTranscription } from '../hooks/useSpeechTranscription';
 import type { InterviewField } from '../types/resumeInterview';
 import styles from './ResumeAssistant.module.css';
+
+export const MAX_STEP_CHARS = 1000;
+export const MAX_AUDIO_DURATION_SEC = 120;
 
 function playSubtleSuccessTone() {
   try {
@@ -53,9 +56,10 @@ export function ResumeInterviewSection({
   onChange,
 }: Props) {
   const recording = useAudioRecorder();
-  const speech = useSpeechTranscription(onChange, () => {});
+  const speech = useSpeechTranscription((text) => onChange(text.slice(0, MAX_STEP_CHARS)), () => {});
   const busy = ['requesting', 'recording', 'stopping'].includes(recording.status);
   const prevStatusRef = useRef(recording.status);
+  const [maxDurationReached, setMaxDurationReached] = useState(false);
 
   useEffect(() => {
     if (active === field && !busy && !speech.listening) onActive(null);
@@ -68,10 +72,29 @@ export function ResumeInterviewSection({
     prevStatusRef.current = recording.status;
   }, [recording.status]);
 
+  // Limite de segurança de 2 minutos (120 segundos) para auto-interromper a gravação
+  useEffect(() => {
+    if (recording.status !== 'recording') return;
+    if (recording.duration >= MAX_AUDIO_DURATION_SEC) {
+      setMaxDurationReached(true);
+      recording.stop();
+      speech.stop();
+      return;
+    }
+    const remainingMs = (MAX_AUDIO_DURATION_SEC - recording.duration) * 1000;
+    const timeoutId = window.setTimeout(() => {
+      setMaxDurationReached(true);
+      recording.stop();
+      speech.stop();
+    }, remainingMs);
+    return () => window.clearTimeout(timeoutId);
+  }, [recording, speech]);
+
   const blocked = pending || (active !== null && active !== field);
 
   async function start() {
     if (blocked || busy || speech.listening) return;
+    setMaxDurationReached(false);
     onActive(field);
     if (!(await recording.start())) {
       onActive(null);
@@ -141,7 +164,7 @@ export function ResumeInterviewSection({
             <>
               <span className={styles.pulsingDot} aria-hidden="true" />
               <span>
-                🔴 Gravando sua fala... Fale no seu ritmo ({recording.duration}s)
+                🔴 Gravando sua fala... Fale no seu ritmo ({recording.duration}s / 120s)
               </span>
             </>
           ) : (
@@ -151,7 +174,9 @@ export function ResumeInterviewSection({
       )}
       {recording.status === 'ready' && !busy && (
         <p role="status" className={styles.capturedBanner}>
-          ✓ Áudio capturado e transcrito com sucesso! Revise o texto abaixo se desejar.
+          {maxDurationReached
+            ? 'Tempo máximo de áudio atingido (2 min). Seu texto foi transcrito e você pode revisá-lo abaixo.'
+            : '✓ Áudio capturado e transcrito com sucesso! Revise o texto abaixo se desejar.'}
         </p>
       )}
       {speech.interim && <p aria-live="off">Transcrição em andamento: {speech.interim}</p>}
@@ -166,11 +191,16 @@ export function ResumeInterviewSection({
       <TextAreaField
         label={`Texto revisável: ${title}`}
         value={value}
+        maxLength={MAX_STEP_CHARS}
         rows={featured ? 5 : 4}
         disabled={pending || busy || speech.listening}
-        onChange={(event) => onChange(event.target.value)}
-        hint="Revise a transcrição antes de enviar à IA. Você também pode escrever ou corrigir aqui."
+        onChange={(event) => onChange(event.target.value.slice(0, MAX_STEP_CHARS))}
       />
+      <div className={styles.charCounter}>
+        <span>
+          {value.length} / 1.000 caracteres
+        </span>
+      </div>
       {(recording.error || speech.error) && (
         <p role="alert" className={styles.error}>
           {recording.error || speech.error}

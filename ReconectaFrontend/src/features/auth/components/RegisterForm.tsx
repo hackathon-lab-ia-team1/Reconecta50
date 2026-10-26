@@ -7,6 +7,7 @@ import {
   CalendarDays,
   CheckCircle2,
   CircleAlert,
+  HelpCircle,
   IdCard,
   LockKeyhole,
   MapPin,
@@ -35,6 +36,7 @@ const initialValues: RegistrationValues = {
   birthDate: '',
   address: '',
   password: '',
+  passwordHint: '',
 };
 
 export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
@@ -71,6 +73,7 @@ export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
     }
     setPending(true);
     try {
+      const trimmedHint = values.passwordHint?.trim();
       await onRegister({
         fullName: values.fullName.trim(),
         phone: values.phone.replace(/\D/g, ''),
@@ -78,6 +81,7 @@ export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
         birthDate: values.birthDate,
         address: values.address.trim(),
         password: values.password,
+        ...(trimmedHint ? { passwordHint: trimmedHint } : {}),
       });
     } catch (error) {
       setMessage(
@@ -185,6 +189,15 @@ export function RegisterForm({ onRegister, onSuccess }: RegisterFormProps) {
           onChange={(event) => update('password', event.target.value)}
           error={errors.password}
           required
+        />
+        <FormField
+          label="Dica para lembrar a sua senha (opcional)"
+          name="passwordHint"
+          placeholder="Ex.: Nome do meu primeiro neto, Rua onde nasci..."
+          hint="Caso esqueça a senha no futuro, mostraremos esta dica para ajudar você a lembrar."
+          icon={<HelpCircle size={20} aria-hidden="true" />}
+          value={values.passwordHint ?? ''}
+          onChange={(event) => update('passwordHint', event.target.value)}
         />
       </fieldset>
       {message && (

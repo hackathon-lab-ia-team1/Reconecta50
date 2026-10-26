@@ -1,82 +1,54 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { db } from './db.js';
 
-interface SessionEntry {
+interface SessionRow {
+  sessionId: string;
   userId: string;
   createdAt: number;
 }
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-const DEFAULT_DATA_DIR = path.resolve(process.cwd(), 'node_modules', '.cache', 'reconecta-data');
-const DATA_DIR = process.env.DATA_DIR || DEFAULT_DATA_DIR;
-const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
 
-let sessions: Record<string, SessionEntry> = {};
+function pruneExpired(): void {
+  const cutoff = Date.now() - SESSION_TTL_MS;
+  const stmt = db.prepare('DELETE FROM sessions WHERE createdAt < ?');
+  stmt.run(cutoff);
+}
 
 export function loadSessions(): void {
   try {
-    if (fs.existsSync(SESSIONS_FILE)) {
-      const raw = fs.readFileSync(SESSIONS_FILE, 'utf-8');
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') {
-        sessions = parsed;
-        pruneExpired();
-      }
-    }
+    pruneExpired();
   } catch (err) {
-    console.error('[sessionStore] Erro ao carregar sessions.json:', err);
-    sessions = {};
+    console.error('[sessionStore] Erro ao limpar sessões expiradas no SQLite:', err);
   }
-}
-
-function persist(): void {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    fs.writeFileSync(SESSIONS_FILE, JSON.stringify(sessions, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('[sessionStore] Erro ao persistir sessions.json:', err);
-  }
-}
-
-function pruneExpired(): void {
-  const now = Date.now();
-  let changed = false;
-  for (const [sid, entry] of Object.entries(sessions)) {
-    if (now - entry.createdAt > SESSION_TTL_MS) {
-      delete sessions[sid];
-      changed = true;
-    }
-  }
-  if (changed) persist();
 }
 
 export function createSession(sessionId: string, userId: string): void {
-  sessions[sessionId] = { userId, createdAt: Date.now() };
-  persist();
+  const stmt = db.prepare(
+    'INSERT OR REPLACE INTO sessions (sessionId, userId, createdAt) VALUES (?, ?, ?)'
+  );
+  stmt.run(sessionId, userId, Date.now());
 }
 
 export function getSessionUserId(sessionId: string): string | null {
-  const entry = sessions[sessionId];
-  if (!entry) return null;
+  const stmt = db.prepare('SELECT sessionId, userId, createdAt FROM sessions WHERE sessionId = ? LIMIT 1');
+  const row = stmt.get(sessionId) as SessionRow | undefined;
+  if (!row) return null;
 
-  if (Date.now() - entry.createdAt > SESSION_TTL_MS) {
-    delete sessions[sessionId];
-    persist();
+  if (Date.now() - Number(row.createdAt) > SESSION_TTL_MS) {
+    deleteSession(sessionId);
     return null;
   }
 
-  return entry.userId;
+  return row.userId;
 }
 
 export function deleteSession(sessionId: string): void {
-  if (sessions[sessionId]) {
-    delete sessions[sessionId];
-    persist();
-  }
+  const stmt = db.prepare('DELETE FROM sessions WHERE sessionId = ?');
+  stmt.run(sessionId);
 }
 
 export function getSessionCount(): number {
-  return Object.keys(sessions).length;
+  const stmt = db.prepare('SELECT COUNT(*) as total FROM sessions');
+  const row = stmt.get() as { total: number } | undefined;
+  return Number(row?.total ?? 0);
 }

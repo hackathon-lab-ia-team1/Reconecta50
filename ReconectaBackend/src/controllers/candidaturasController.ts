@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import type { Request, Response } from 'express';
+import { db } from '../data/db.js';
 import { VAGAS_OPORTUNIDADES } from '../data/mocks/vagas.mock.js';
 import { SESSION_COOKIE } from '../middlewares/authMiddleware.js';
 import { getPublicUserBySession } from '../services/authService.js';
@@ -18,11 +19,47 @@ export interface CandidaturaRegistrada {
   whatsappPhone: string;
   availability: string;
   salaryExpectation: string;
+  appliedAt?: string;
   status: 'submitted';
   createdAt: string;
 }
 
-const candidaturasStore: CandidaturaRegistrada[] = [];
+interface CandidaturaRow {
+  applicationId: string;
+  userId: string | null;
+  jobId: string;
+  jobTitle: string;
+  company: string;
+  data: string;
+  createdAt: string;
+}
+
+function mapRowToCandidatura(row: CandidaturaRow): CandidaturaRegistrada | null {
+  try {
+    const parsed = JSON.parse(row.data) as CandidaturaRegistrada;
+    return {
+      ...parsed,
+      applicationId: parsed.applicationId || row.applicationId,
+      ...(row.userId ? { userId: row.userId } : {}),
+      jobId: parsed.jobId || row.jobId,
+      jobTitle: parsed.jobTitle || row.jobTitle,
+      company: parsed.company || row.company,
+      createdAt: parsed.createdAt || row.createdAt,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function loadCandidaturas(): void {
+  // Inicialização gerenciada pelo SQLite (db.ts)
+}
+
+export function getCandidaturasCount(): number {
+  const stmt = db.prepare('SELECT COUNT(*) as total FROM candidaturas');
+  const row = stmt.get() as { total: number } | undefined;
+  return Number(row?.total ?? 0);
+}
 
 export function handlePrepararCandidatura(req: Request, res: Response): void {
   const { jobId, allowAutomatic, resume, profile } = req.body ?? {};
@@ -78,10 +115,16 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
 
   const sessionId = req.cookies?.[SESSION_COOKIE];
   const user = sessionId ? getPublicUserBySession(sessionId) : null;
+  const userId =
+    user?.id ||
+    (typeof body.userId === 'string' && body.userId.trim() ? body.userId.trim() : undefined);
   const vaga = VAGAS_OPORTUNIDADES.find((v) => v.id === jobId);
 
   const protocolNumber = crypto.randomUUID().slice(0, 8).toUpperCase();
-  const applicationId = `REC-${protocolNumber}`;
+  const applicationId =
+    typeof body.applicationId === 'string' && body.applicationId.trim()
+      ? body.applicationId.trim()
+      : `REC-${protocolNumber}`;
 
   const whatsappPhone =
     typeof body.whatsappPhone === 'string' && body.whatsappPhone.trim()
@@ -90,9 +133,11 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
         ? vaga.tracking.phone.replace(/\D/g, '')
         : '11987654321';
 
+  const createdAt = new Date().toISOString();
+
   const novaCandidatura: CandidaturaRegistrada = {
     applicationId,
-    userId: user?.id,
+    userId,
     jobId,
     jobTitle:
       typeof body.jobTitle === 'string' && body.jobTitle.trim()
@@ -131,18 +176,40 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
       typeof body.salaryExpectation === 'string' && body.salaryExpectation.trim()
         ? body.salaryExpectation.trim().slice(0, 200)
         : 'Compatível com a vaga',
+    appliedAt:
+      typeof body.appliedAt === 'string' && body.appliedAt.trim()
+        ? body.appliedAt.trim().slice(0, 40)
+        : new Date().toLocaleDateString('pt-BR'),
     status: 'submitted',
-    createdAt: new Date().toISOString(),
+    createdAt,
   };
 
-  const existingIndex = candidaturasStore.findIndex(
-    (c) => c.jobId === jobId && c.userId === user?.id
-  );
-  if (existingIndex >= 0) {
-    candidaturasStore[existingIndex] = novaCandidatura;
+  if (userId) {
+    const deleteOldStmt = db.prepare(
+      'DELETE FROM candidaturas WHERE jobId = ? AND userId = ? AND applicationId != ?'
+    );
+    deleteOldStmt.run(jobId, userId, applicationId);
   } else {
-    candidaturasStore.push(novaCandidatura);
+    const deleteOldAnonStmt = db.prepare(
+      'DELETE FROM candidaturas WHERE jobId = ? AND userId IS NULL AND applicationId != ?'
+    );
+    deleteOldAnonStmt.run(jobId, applicationId);
   }
+
+  const upsertStmt = db.prepare(`
+    INSERT OR REPLACE INTO candidaturas (
+      applicationId, userId, jobId, jobTitle, company, data, createdAt
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  upsertStmt.run(
+    applicationId,
+    userId ?? null,
+    novaCandidatura.jobId,
+    novaCandidatura.jobTitle,
+    novaCandidatura.company,
+    JSON.stringify(novaCandidatura),
+    createdAt
+  );
 
   res.status(201).json({
     status: 'submitted',
@@ -154,10 +221,26 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
 export function handleListarCandidaturas(req: Request, res: Response): void {
   const sessionId = req.cookies?.[SESSION_COOKIE];
   const user = sessionId ? getPublicUserBySession(sessionId) : null;
+  const queryUserId =
+    typeof req.query?.userId === 'string' && req.query.userId.trim()
+      ? req.query.userId.trim()
+      : undefined;
+  const activeUserId = user?.id || queryUserId;
 
-  const lista = user
-    ? candidaturasStore.filter((c) => !c.userId || c.userId === user.id)
-    : candidaturasStore;
+  let rows: CandidaturaRow[];
+  if (activeUserId) {
+    const stmt = db.prepare(
+      'SELECT * FROM candidaturas WHERE userId IS NULL OR userId = ? ORDER BY createdAt ASC'
+    );
+    rows = stmt.all(activeUserId) as unknown as CandidaturaRow[];
+  } else {
+    const stmt = db.prepare('SELECT * FROM candidaturas ORDER BY createdAt ASC');
+    rows = stmt.all() as unknown as CandidaturaRow[];
+  }
+
+  const lista = rows
+    .map(mapRowToCandidatura)
+    .filter((item): item is CandidaturaRegistrada => item !== null);
 
   res.json({
     sucesso: true,

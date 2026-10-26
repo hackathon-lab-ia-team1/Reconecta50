@@ -1,6 +1,9 @@
 import type { GenerateResume } from '../types/resumeGeneration';
 import { parseResumeResponse } from '../utils/parseResumeResponse';
 
+const HIGH_DEMAND_FALLBACK_MSG =
+  'Nossos assistentes de IA estão temporariamente com alta demanda. Por favor, tente novamente em alguns instantes ou use a edição manual.';
+
 export const generateResume: GenerateResume = async (input, signal) => {
   const endpoint =
     input.source === 'audio'
@@ -62,6 +65,12 @@ export const generateResume: GenerateResume = async (input, signal) => {
       throw new Error('O áudio ficou muito grande. Faça uma gravação mais curta ou use texto.');
     if (response.status === 429)
       throw new Error('Aguarde um momento antes de tentar criar o currículo novamente.');
+    if (response.status === 503) {
+      const errJson = (await response.json().catch(() => null)) as
+        | { erro?: string; error?: string }
+        | null;
+      throw new Error(errJson?.erro || errJson?.error || HIGH_DEMAND_FALLBACK_MSG);
+    }
     if (!response.ok)
       throw new Error(
         'Não foi possível criar o currículo agora. Tente novamente ou preencha os campos manualmente.',

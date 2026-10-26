@@ -162,6 +162,76 @@ a.text-button:hover {
   overflow-wrap: anywhere;
 }
 
+.hint-panel {
+  background: #f4f8f5;
+  border: 1.5px solid #b7d7c2;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.hint-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--forest);
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+}
+
+.hint-description {
+  margin: 0 0 14px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--teal);
+}
+
+.hint-actions {
+  margin: 12px 0 14px;
+}
+
+.hint-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--green);
+  background: #ffffff;
+  color: var(--green);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hint-button:hover:not(:disabled) {
+  background: var(--green);
+  color: #ffffff;
+}
+
+.whatsapp-support-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #1f7a4c;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 6px;
+}
+
+.whatsapp-support-link:hover {
+  background: var(--green);
+}
+
 @media (max-width: 960px) {
   .primary-button {
     font-size: 1rem;

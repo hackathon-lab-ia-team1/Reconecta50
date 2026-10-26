@@ -66,6 +66,7 @@ describe('Dashboard', () => {
     );
     expect(summary.value).toBe('Meu rascunho manual.');
   });
+
   it('abre o formulário manual pelo botão e mantém o rascunho ao recolher', () => {
     window.history.replaceState({}, '', '/curriculo');
     render(<App />);
@@ -86,7 +87,7 @@ describe('Dashboard', () => {
     ).toBe('Meu rascunho de experiência.');
   });
 
-  it('atualiza o currículo automaticamente com a IA e o disponibiliza para as recomendações', async () => {
+  it('atualiza o currículo automaticamente com a IA, exibe o banner de pronto e o disponibiliza para as recomendações', async () => {
     window.history.replaceState({}, '', '/curriculo');
     vi.stubEnv('VITE_RESUME_GENERATE_URL', '/resume/generate');
     vi.stubGlobal(
@@ -107,12 +108,19 @@ describe('Dashboard', () => {
       target: { value: 'Trabalhei como recepcionista.' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Criar currículo com os textos das etapas' }));
-    await screen.findByRole('textbox', { name: 'Função ou trabalho' });
+    await screen.findByRole('heading', { name: '🎉 Seu currículo Reconecta 50+ está pronto!' });
     expect(
-      screen
-        .getByRole('button', { name: 'Preencher currículo manualmente' })
-        .getAttribute('aria-expanded'),
-    ).toBe('true');
+      screen.getByRole('link', { name: 'Ver vagas recomendadas para meu perfil ➜' }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole('button', {
+        name: '🎙️ Quer refazer ou atualizar seu currículo com a IA? Clique aqui',
+      }),
+    ).toBeTruthy();
+    const manualToggle = screen.getByRole('button', { name: 'Fazer ajustes manuais no texto' });
+    expect(manualToggle.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(manualToggle);
+    expect(manualToggle.getAttribute('aria-expanded')).toBe('true');
     expect(
       (screen.getByRole('textbox', { name: 'Função ou trabalho' }) as HTMLInputElement).value,
     ).toBe('Recepcionista');
@@ -129,11 +137,15 @@ describe('Dashboard', () => {
       screen.queryByRole('heading', { name: '🔒 Esta área requer seu currículo pronto' }),
     ).toBeNull();
     navigate('Meu currículo');
-    fireEvent.click(screen.getByRole('button', { name: 'Preencher currículo manualmente' }));
+    expect(
+      screen.getByRole('heading', { name: '🎉 Seu currículo Reconecta 50+ está pronto!' }),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Fazer ajustes manuais no texto' }));
     expect(
       (screen.getByRole('textbox', { name: 'Função ou trabalho' }) as HTMLInputElement).value,
     ).toBe('Recepcionista');
   });
+
   it('explica vagas recomendadas, canais de contato e candidaturas na ajuda inicial', () => {
     render(<App />);
     const help = screen.getByRole('list', { name: 'Como usar o painel' });
@@ -190,7 +202,7 @@ describe('Dashboard', () => {
     }
   });
 
-  it('mantém perfil e currículo durante a navegação, sem gravar dados pessoais no armazenamento local', async () => {
+  it('mantém perfil e currículo durante a navegação e persiste o currículo contra F5 sem gravar dados pessoais no localStorage', async () => {
     render(<App />);
     navigate('Meu perfil');
     fireEvent.change(screen.getByLabelText('Nome completo'), { target: { value: 'Ana Souza' } });
@@ -249,11 +261,13 @@ describe('Dashboard', () => {
     navigate('Visão geral');
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Olá, Ana!');
     navigate('Meu currículo');
-    fireEvent.click(screen.getByRole('button', { name: 'Preencher currículo manualmente' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fazer ajustes manuais no texto' }));
     expect((screen.getByLabelText('Função ou trabalho') as HTMLInputElement).value).toBe(
       'Recepcionista',
     );
-    expect(Object.keys(localStorage)).toEqual(['reconecta.fontScale']);
+    expect(Object.keys(localStorage).sort()).toEqual(
+      ['reconecta.fontScale', 'reconecta_resume_guest'].sort(),
+    );
   });
 
   it('apresenta Minhas vagas sem candidaturas ou status inventados', () => {
@@ -268,6 +282,56 @@ describe('Dashboard', () => {
       screen.getByText('O acompanhamento de candidaturas ainda não está disponível nesta prévia.'),
     ).toBeTruthy();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('sincroniza e restaura candidaturas salvas no backend e localStorage na página Minhas vagas após F5', async () => {
+    window.history.replaceState({}, '', '/minhas-vagas');
+    vi.stubEnv('VITE_CANDIDATURAS_URL', '/api/candidaturas');
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          sucesso: true,
+          total: 1,
+          candidaturas: [
+            {
+              applicationId: 'REC-998877',
+              jobId: 'vaga-farmamais-50',
+              jobTitle: 'Assistente de Atendimento e Relacionamento',
+              company: 'Rede FarmaMais (Programa 50+ Ativo)',
+              location: 'São Paulo, SP',
+              workMode: 'Presencial',
+              compensation: 'R$ 2.350 por mês',
+              recruiterName: 'Patrícia Almeida',
+              recruiterContact: 'WhatsApp: (11) 98765-4321',
+              whatsappPhone: '11987654321',
+              availability: 'Imediata',
+              salaryExpectation: 'Compatível com a vaga',
+              appliedAt: '25/10/2026',
+              status: 'submitted',
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const view = render(<App />);
+    await screen.findByText('Protocolo: REC-998877');
+    expect(
+      screen.getByRole('heading', { name: 'Assistente de Atendimento e Relacionamento' }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole('link', { name: 'Falar com o recrutador no WhatsApp' }).getAttribute('href'),
+    ).toContain('wa.me/5511987654321');
+    view.unmount();
+
+    // Simula F5 mesmo sem rede (lendo do localStorage)
+    vi.stubEnv('VITE_CANDIDATURAS_URL', '');
+    render(<App />);
+    expect(screen.getByText('Protocolo: REC-998877')).toBeTruthy();
+    expect(
+      screen.getByRole('heading', { name: 'Assistente de Atendimento e Relacionamento' }),
+    ).toBeTruthy();
   });
 
   it('valida os novos dados do perfil e foca o primeiro erro', () => {

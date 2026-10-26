@@ -119,6 +119,7 @@ export async function logout(): Promise<void> {
     throw new Error('Não foi possível encerrar sua sessão agora. Tente novamente em instantes.');
   }
 }
+
 export async function login(credentials: LoginCredentials): Promise<SessionUser | null> {
   const endpoint = import.meta.env.VITE_AUTH_LOGIN_URL;
   if (!endpoint)
@@ -150,4 +151,21 @@ export async function login(credentials: LoginCredentials): Promise<SessionUser 
   )
     throw new Error('O serviço não confirmou o acesso em um formato válido.');
   return parseUser(body.user);
+}
+
+export async function requestPasswordHint(identifier: string): Promise<string | null> {
+  const loginUrl = import.meta.env.VITE_AUTH_LOGIN_URL || 'http://localhost:3001/auth/login';
+  const endpoint = loginUrl.replace(/\/(api\/)?auth\/login\/?$/, '/api/auth/lembrete-senha');
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ identifier: identifier.replace(/\D/g, '') }),
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response.ok) {
+    return null;
+  }
+  const body = (await response.json()) as { success?: boolean; hint?: string | null };
+  return typeof body?.hint === 'string' && body.hint.trim() ? body.hint.trim() : null;
 }

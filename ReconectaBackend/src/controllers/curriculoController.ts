@@ -1,10 +1,163 @@
 import type { Request, Response } from 'express';
+import { db } from '../data/db.js';
 import {
   gerarCurriculoComIA,
   sanitizarTextoCandidato,
   MAX_RELATO_LENGTH,
+  AIUnavailableError,
 } from '../services/geminiService.js';
+import { SESSION_COOKIE } from '../middlewares/authMiddleware.js';
+import { getPublicUserBySession } from '../services/authService.js';
 import type { FormularioCurriculo } from '../types/curriculo.types.js';
+
+export interface CurriculoSalvoDraft {
+  summary: string;
+  role: string;
+  company: string;
+  period: string;
+  activities: string;
+  skills: string;
+  targetRole?: string;
+  education?: string;
+  languages?: string;
+  additionalContacts?: string;
+  updatedAt?: string;
+}
+
+interface CurriculoRow {
+  userId: string;
+  data: string;
+  updatedAt: string;
+}
+
+export function loadCurriculos(): void {
+  // Inicialização gerenciada pelo SQLite (db.ts e seed.ts)
+}
+
+export function getCurriculosCount(): number {
+  const stmt = db.prepare('SELECT COUNT(*) as total FROM curriculos');
+  const row = stmt.get() as { total: number } | undefined;
+  return Number(row?.total ?? 0);
+}
+
+function resolveOwnerKey(req: Request): string {
+  const sessionId = req.cookies?.[SESSION_COOKIE];
+  const user = sessionId ? getPublicUserBySession(sessionId) : null;
+  if (user?.id) return user.id;
+
+  const bodyUserId =
+    typeof req.body?.userId === 'string' && req.body.userId.trim() ? req.body.userId.trim() : '';
+  if (bodyUserId) return bodyUserId;
+
+  const queryUserId =
+    typeof req.query?.userId === 'string' && req.query.userId.trim() ? req.query.userId.trim() : '';
+  if (queryUserId) return queryUserId;
+
+  if (sessionId) return `session:${sessionId}`;
+  return 'guest';
+}
+
+function sanitizeDraftField(value: unknown, maxLength = 4000): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().slice(0, maxLength);
+}
+
+/**
+ * POST /api/curriculo/salvar
+ * Salva o ResumeDraft associado ao usuário logado (ou anônimo/sessionId) na tabela curriculos do SQLite.
+ */
+export function handleSalvarCurriculo(req: Request, res: Response): void {
+  try {
+    const body = req.body;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      res.status(400).json({ sucesso: false, erro: 'Formato de currículo inválido.' });
+      return;
+    }
+
+    const source =
+      body.resume && typeof body.resume === 'object' && !Array.isArray(body.resume)
+        ? (body.resume as Record<string, unknown>)
+        : (body as Record<string, unknown>);
+
+    const updatedAt = new Date().toISOString();
+
+    const draft: CurriculoSalvoDraft = {
+      summary: sanitizeDraftField(source.summary, 4000),
+      role: sanitizeDraftField(source.role, 300),
+      company: sanitizeDraftField(source.company, 300),
+      period: sanitizeDraftField(source.period, 200),
+      activities: sanitizeDraftField(source.activities, 6000),
+      skills: sanitizeDraftField(source.skills, 2000),
+      ...(typeof source.targetRole === 'string'
+        ? { targetRole: sanitizeDraftField(source.targetRole, 300) }
+        : {}),
+      ...(typeof source.education === 'string'
+        ? { education: sanitizeDraftField(source.education, 1000) }
+        : {}),
+      ...(typeof source.languages === 'string'
+        ? { languages: sanitizeDraftField(source.languages, 500) }
+        : {}),
+      ...(typeof source.additionalContacts === 'string'
+        ? { additionalContacts: sanitizeDraftField(source.additionalContacts, 500) }
+        : {}),
+      updatedAt,
+    };
+
+    const ownerKey = resolveOwnerKey(req);
+    const stmt = db.prepare(
+      'INSERT OR REPLACE INTO curriculos (userId, data, updatedAt) VALUES (?, ?, ?)'
+    );
+    stmt.run(ownerKey, JSON.stringify(draft), updatedAt);
+
+    res.status(200).json({
+      sucesso: true,
+      ownerKey,
+      resume: draft,
+    });
+  } catch (error) {
+    console.error('[curriculo/salvar] Erro:', error);
+    res.status(500).json({
+      sucesso: false,
+      erro: 'Não foi possível salvar o currículo no momento.',
+    });
+  }
+}
+
+/**
+ * GET /api/curriculo/meu
+ * Retorna o currículo salvo do usuário autenticado (ou sessão/guest) a partir do SQLite.
+ */
+export function handleObterMeuCurriculo(req: Request, res: Response): void {
+  try {
+    const ownerKey = resolveOwnerKey(req);
+    const stmt = db.prepare('SELECT userId, data, updatedAt FROM curriculos WHERE userId = ? LIMIT 1');
+    const row = stmt.get(ownerKey) as CurriculoRow | undefined;
+
+    let saved: CurriculoSalvoDraft | null = null;
+    if (row?.data) {
+      try {
+        const parsed = JSON.parse(row.data) as CurriculoSalvoDraft;
+        saved = {
+          ...parsed,
+          updatedAt: parsed.updatedAt || row.updatedAt,
+        };
+      } catch {
+        saved = null;
+      }
+    }
+
+    res.status(200).json({
+      sucesso: true,
+      resume: saved,
+    });
+  } catch (error) {
+    console.error('[curriculo/meu] Erro:', error);
+    res.status(500).json({
+      sucesso: false,
+      erro: 'Não foi possível carregar o currículo salvo.',
+    });
+  }
+}
 
 /**
  * POST /api/curriculo/gerar
@@ -119,6 +272,14 @@ export async function handleGerarCurriculo(req: Request, res: Response): Promise
     const resultado = await gerarCurriculoComIA(payload);
     res.json(resultado);
   } catch (error) {
+    if (error instanceof AIUnavailableError) {
+      res.status(error.statusCode).json({
+        sucesso: false,
+        erro: error.message,
+        error: error.message,
+      });
+      return;
+    }
     console.error('[curriculo/gerar] Erro:', error);
     res.status(500).json({
       sucesso: false,

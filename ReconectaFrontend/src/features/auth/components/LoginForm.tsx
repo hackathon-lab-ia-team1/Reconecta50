@@ -1,8 +1,17 @@
 import authStyles from './AuthForm.module.css';
 import { useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
-import { ArrowRight, LockKeyhole, UserRound, CircleAlert, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowRight,
+  LockKeyhole,
+  UserRound,
+  CircleAlert,
+  CheckCircle2,
+  HelpCircle,
+  MessageCircle,
+} from 'lucide-react';
 import { FormField } from '../../../components/FormField';
+import { requestPasswordHint } from '../services/authService';
 import type { LoginCredentials } from '../types/login';
 
 export interface LoginFormProps {
@@ -28,8 +37,45 @@ export function LoginForm({
   const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showHintPanel, setShowHintPanel] = useState(false);
+  const [hintIdentifier, setHintIdentifier] = useState('');
+  const [hintLoading, setHintLoading] = useState(false);
+  const [hintMessage, setHintMessage] = useState('');
+  const [hintFound, setHintFound] = useState(false);
   const identifierRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  async function handleCheckHint() {
+    const clean = (hintIdentifier || identifier).replace(/\D/g, '');
+    if (clean.length < 10 || clean.length > 11) {
+      setHintFound(false);
+      setHintMessage('Informe seu CPF (11 dígitos) ou telefone com DDD para consultar sua dica.');
+      return;
+    }
+    setHintLoading(true);
+    setHintMessage('');
+    try {
+      const hint = await requestPasswordHint(clean);
+      if (hint) {
+        setHintFound(true);
+        setHintMessage(
+          `Sua dica cadastrada é: ${hint}. Se ainda assim não lembrar, entre em contato com nosso suporte acolhedor pelo WhatsApp.`,
+        );
+      } else {
+        setHintFound(false);
+        setHintMessage(
+          'Não encontramos uma dica cadastrada para esses dados. Entre em contato com nosso suporte acolhedor pelo WhatsApp para recuperar seu acesso.',
+        );
+      }
+    } catch {
+      setHintFound(false);
+      setHintMessage(
+        'Não encontramos uma dica cadastrada para esses dados. Entre em contato com nosso suporte acolhedor pelo WhatsApp para recuperar seu acesso.',
+      );
+    } finally {
+      setHintLoading(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -120,17 +166,79 @@ export function LoginForm({
         <button
           type="button"
           className={authStyles['text-button']}
+          aria-expanded={showHintPanel}
           onClick={() => {
             if (onForgotPassword) {
               onForgotPassword();
               return;
             }
-            setMessage('A recuperação de senha ainda não está disponível nesta versão.');
+            setShowHintPanel((prev) => {
+              const next = !prev;
+              if (next && !hintIdentifier && identifier) {
+                setHintIdentifier(identifier);
+              }
+              return next;
+            });
           }}
         >
           Esqueci minha senha
         </button>
       </div>
+      {showHintPanel && (
+        <section
+          className={authStyles['hint-panel']}
+          aria-label="Lembrete de senha"
+        >
+          <div className={authStyles['hint-header']}>
+            <HelpCircle size={20} aria-hidden="true" />
+            <strong>Lembrete de senha acolhedor</strong>
+          </div>
+          <p className={authStyles['hint-description']}>
+            Informe seu CPF ou telefone com DDD para consultar a dica cadastrada na criação da sua
+            conta:
+          </p>
+          <FormField
+            label="Seu CPF ou telefone para consultar a dica"
+            name="hintIdentifier"
+            inputMode="tel"
+            placeholder="Ex.: 000.000.000-00 ou (11) 99999-9999"
+            value={hintIdentifier}
+            onChange={(event) => setHintIdentifier(event.target.value)}
+          />
+          <div className={authStyles['hint-actions']}>
+            <button
+              type="button"
+              className={authStyles['hint-button']}
+              disabled={hintLoading}
+              onClick={() => void handleCheckHint()}
+            >
+              {hintLoading ? 'Consultando sua dica…' : 'Ver minha dica de senha'}
+            </button>
+          </div>
+          {hintMessage && (
+            <div
+              className={`${authStyles['form-message']} ${hintFound ? authStyles['success'] : ''}`}
+              role="status"
+            >
+              {hintFound ? (
+                <CheckCircle2 size={20} aria-hidden="true" />
+              ) : (
+                <CircleAlert size={20} aria-hidden="true" />
+              )}
+              <span>{hintMessage}</span>
+            </div>
+          )}
+          <a
+            href="https://wa.me/5511999999999?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20para%20recuperar%20minha%20senha%20no%20Reconecta%2050%2B."
+            target="_blank"
+            rel="noopener noreferrer"
+            className={authStyles['whatsapp-support-link']}
+          >
+            <MessageCircle size={18} aria-hidden="true" />
+            Falar com suporte acolhedor pelo WhatsApp
+          </a>
+        </section>
+      )}
       {message && (
         <div
           className={`${authStyles['form-message']} ${success ? authStyles['success'] : ''}`}

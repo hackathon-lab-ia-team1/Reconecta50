@@ -1,11 +1,13 @@
 import accessibilityStyles from './AccessibilityToolbar.module.css';
 import { Volume2, VolumeX } from 'lucide-react';
 import { useFontScale } from '../features/accessibility/useFontScale';
+
 interface AccessibilityToolbarProps {
   speaking: boolean;
   audioAvailable: boolean;
   onRead: () => void;
 }
+
 export function AccessibilityToolbar({
   speaking,
   audioAvailable,
@@ -35,11 +37,11 @@ export function AccessibilityToolbar({
         <button
           className={`${accessibilityStyles['accessibility-button']} ${accessibilityStyles['read-button']}`}
           onClick={onRead}
-          aria-label={speaking ? 'Parar leitura' : 'Ouvir a página'}
+          aria-label={speaking ? 'Parar leitura' : 'Ouvir página'}
           aria-pressed={speaking}
         >
-          {speaking ? <VolumeX size={19} /> : <Volume2 size={19} />}
-          <span>{speaking ? 'Parar leitura' : 'Ouvir a página'}</span>
+          {speaking ? <VolumeX size={19} aria-hidden="true" /> : <Volume2 size={19} aria-hidden="true" />}
+          <span>{speaking ? 'Parar leitura' : 'Ouvir página'}</span>
         </button>
       )}
     </nav>

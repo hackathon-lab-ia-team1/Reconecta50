@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../components/Button';
 import { LinkButton } from '../components/LinkButton';
 import { JobCard } from '../features/jobs/components/JobCard';
-import { JobCatalog } from '../features/jobs/components/JobCatalog';
 import { JobApplicationActions } from '../features/jobs/components/JobApplicationActions';
 import { JobFilters } from '../features/jobs/components/JobFilters';
 import type { JobTrackingFilter } from '../features/jobs/types/job';
@@ -65,20 +64,25 @@ export function RecommendedJobsPage() {
         </section>
       ) : (
         <>
-          {import.meta.env.VITE_JOBS_URL && <JobCatalog />}
           <div className={styles.analysis}>
             <h2>Encontre vagas para o seu currículo</h2>
             <p>
-              A análise usa as informações profissionais do seu currículo. Se fizer alterações nele,
-              solicite uma nova análise.
+              A análise usa as informações profissionais do seu currículo para selecionar as
+              oportunidades afirmativas 50+ mais compatíveis com o seu perfil. Se fizer alterações
+              nele, solicite uma nova análise.
             </p>
             <div className={styles.actions}>
               <Button onClick={() => void refresh()} disabled={loading}>
-                {loading
-                  ? 'Analisando seu currículo…'
-                  : completed
-                    ? 'Atualizar vagas para este currículo'
-                    : 'Encontrar vagas para meu currículo'}
+                {loading ? (
+                  'Analisando seu currículo…'
+                ) : completed ? (
+                  'Atualizar vagas para este currículo'
+                ) : (
+                  <>
+                    <span aria-hidden="true">🔍 </span>
+                    Encontrar vagas para meu currículo
+                  </>
+                )}
               </Button>
               {loading && (
                 <Button variant="secondary" onClick={cancel}>

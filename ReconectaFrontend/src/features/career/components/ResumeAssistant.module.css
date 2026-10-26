@@ -1,6 +1,26 @@
 .assistantWrapper {
   margin-bottom: 28px;
 }
+.collapsedWrapper {
+  margin: 24px 0 16px;
+  display: flex;
+  justify-content: center;
+}
+.collapsedTrigger {
+  width: 100%;
+  max-width: 740px;
+  justify-content: center;
+  padding: 16px 24px;
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  font-weight: 700;
+  color: var(--forest);
+}
+.introContent {
+  flex: 1;
+  min-width: 0;
+}
 .assistantIntro {
   display: flex;
   align-items: flex-start;
@@ -218,6 +238,14 @@
   display: block;
   width: 100%;
   margin: 16px 0;
+}
+.charCounter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--teal);
 }
 @media (max-width: 600px) {
   .assistant,

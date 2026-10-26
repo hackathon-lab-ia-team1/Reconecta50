@@ -8,6 +8,7 @@ import { handleProfile } from '../controllers/authController.js';
 const router = Router();
 
 router.use('/auth', authRoutes);
+router.use('/api/auth', authRoutes);
 router.get('/api/profile', handleProfile);
 router.use('/api/curriculo', curriculoRoutes);
 router.use('/api/vagas', vagasRoutes);

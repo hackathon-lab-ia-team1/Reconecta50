@@ -34,6 +34,8 @@ export async function registerUser(req: RegisterRequest): Promise<LoginResult> {
     throw new AuthError('Já existe uma conta com este telefone.', 409);
   }
 
+  const trimmedHint = req.passwordHint?.trim();
+
   const newUser: UserRecord = {
     id: crypto.randomUUID(),
     fullName: req.fullName,
@@ -42,6 +44,7 @@ export async function registerUser(req: RegisterRequest): Promise<LoginResult> {
     birthDate: req.birthDate,
     address: req.address,
     passwordHash: await hashPassword(req.password),
+    ...(trimmedHint ? { passwordHint: trimmedHint } : {}),
     createdAt: new Date().toISOString(),
   };
   addUser(newUser);
@@ -49,6 +52,12 @@ export async function registerUser(req: RegisterRequest): Promise<LoginResult> {
   const sessionId = generateSessionId();
   createSession(sessionId, newUser.id);
   return { success: true, sessionId, user: toPublicUser(newUser) };
+}
+
+export function getPasswordHintByIdentifier(identifier: string): string | null {
+  if (!identifier || typeof identifier !== 'string') return null;
+  const user = findUserByIdentifier(identifier);
+  return user?.passwordHint?.trim() || null;
 }
 
 export function getUserBySession(sessionId: string): SessionUser | null {

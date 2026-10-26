@@ -2,6 +2,9 @@ import type { RecommendJobs } from '../types/recommendation';
 import { normalizeResume, validateResume } from '../../career/utils/validateResume';
 import { parseRecommendations } from '../utils/parseRecommendations';
 
+const HIGH_DEMAND_FALLBACK_MSG =
+  'Nossos assistentes de IA estão temporariamente com alta demanda. Por favor, tente novamente em alguns instantes ou use a edição manual.';
+
 export const recommendJobs: RecommendJobs = async (resume, signal) => {
   if (Object.keys(validateResume(resume)).length)
     throw new Error('Atualize seu currículo antes de buscar recomendações.');
@@ -31,6 +34,12 @@ export const recommendJobs: RecommendJobs = async (resume, signal) => {
       throw new Error('Entre na sua conta para consultar recomendações para seu currículo.');
     if (response.status === 429)
       throw new Error('Aguarde um momento antes de buscar novas recomendações.');
+    if (response.status === 503) {
+      const errJson = (await response.json().catch(() => null)) as
+        | { erro?: string; error?: string }
+        | null;
+      throw new Error(errJson?.erro || errJson?.error || HIGH_DEMAND_FALLBACK_MSG);
+    }
     if (!response.ok)
       throw new Error('Não foi possível analisar as vagas agora. Tente novamente em instantes.');
     return parseRecommendations(await response.json());
