@@ -2,8 +2,6 @@ import crypto from 'node:crypto';
 import type { Request, Response } from 'express';
 import { db } from '../data/db.js';
 import { VAGAS_OPORTUNIDADES } from '../data/mocks/vagas.mock.js';
-import { SESSION_COOKIE } from '../middlewares/authMiddleware.js';
-import { getPublicUserBySession } from '../services/authService.js';
 
 export interface CandidaturaRegistrada {
   applicationId: string;
@@ -105,6 +103,12 @@ export function handlePrepararCandidatura(req: Request, res: Response): void {
 }
 
 export function handleEnviarCandidatura(req: Request, res: Response): void {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(401).json({ error: 'Sessão não encontrada ou expirada. Faça login.' });
+    return;
+  }
+
   const body = req.body ?? {};
   const jobId = typeof body.jobId === 'string' && body.jobId.trim() ? body.jobId.trim() : '';
 
@@ -113,9 +117,6 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
     return;
   }
 
-  const sessionId = req.cookies?.[SESSION_COOKIE];
-  const user = sessionId ? getPublicUserBySession(sessionId) : null;
-  const userId = user?.id;
   const vaga = VAGAS_OPORTUNIDADES.find((v) => v.id === jobId);
 
   const protocolNumber = crypto.randomUUID().slice(0, 8).toUpperCase();
@@ -202,24 +203,16 @@ export function handleEnviarCandidatura(req: Request, res: Response): void {
 }
 
 export function handleListarCandidaturas(req: Request, res: Response): void {
-  const sessionId = req.cookies?.[SESSION_COOKIE];
-  const user = sessionId ? getPublicUserBySession(sessionId) : null;
-  const queryUserId =
-    typeof req.query?.userId === 'string' && req.query.userId.trim()
-      ? req.query.userId.trim()
-      : undefined;
-  const activeUserId = user?.id || queryUserId;
-
-  let rows: CandidaturaRow[];
-  if (activeUserId) {
-    const stmt = db.prepare(
-      'SELECT * FROM candidaturas WHERE userId IS NULL OR userId = ? ORDER BY createdAt ASC'
-    );
-    rows = stmt.all(activeUserId) as unknown as CandidaturaRow[];
-  } else {
-    const stmt = db.prepare('SELECT * FROM candidaturas ORDER BY createdAt ASC');
-    rows = stmt.all() as unknown as CandidaturaRow[];
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(401).json({ error: 'Sessão não encontrada ou expirada. Faça login.' });
+    return;
   }
+
+  const stmt = db.prepare(
+    'SELECT * FROM candidaturas WHERE userId = ? ORDER BY createdAt ASC'
+  );
+  const rows = stmt.all(userId) as unknown as CandidaturaRow[];
 
   const lista = rows
     .map(mapRowToCandidatura)
