@@ -6,8 +6,6 @@ import {
   MAX_RELATO_LENGTH,
   AIUnavailableError,
 } from '../services/geminiService.js';
-import { SESSION_COOKIE } from '../middlewares/authMiddleware.js';
-import { getPublicUserBySession } from '../services/authService.js';
 import type { FormularioCurriculo } from '../types/curriculo.types.js';
 
 export interface CurriculoSalvoDraft {
@@ -41,20 +39,7 @@ export function getCurriculosCount(): number {
 }
 
 function resolveOwnerKey(req: Request): string {
-  const sessionId = req.cookies?.[SESSION_COOKIE];
-  const user = sessionId ? getPublicUserBySession(sessionId) : null;
-  if (user?.id) return user.id;
-
-  const bodyUserId =
-    typeof req.body?.userId === 'string' && req.body.userId.trim() ? req.body.userId.trim() : '';
-  if (bodyUserId) return bodyUserId;
-
-  const queryUserId =
-    typeof req.query?.userId === 'string' && req.query.userId.trim() ? req.query.userId.trim() : '';
-  if (queryUserId) return queryUserId;
-
-  if (sessionId) return `session:${sessionId}`;
-  return 'guest';
+  return req.user?.id ?? '';
 }
 
 function sanitizeDraftField(value: unknown, maxLength = 4000): string {
@@ -64,10 +49,15 @@ function sanitizeDraftField(value: unknown, maxLength = 4000): string {
 
 /**
  * POST /api/curriculo/salvar
- * Salva o ResumeDraft associado ao usuário logado (ou anônimo/sessionId) na tabela curriculos do SQLite.
+ * Salva o ResumeDraft associado ao usuário logado na tabela curriculos do SQLite.
  */
 export function handleSalvarCurriculo(req: Request, res: Response): void {
   try {
+    if (!req.user?.id) {
+      res.status(401).json({ error: 'Sessão não encontrada ou expirada. Faça login.' });
+      return;
+    }
+
     const body = req.body;
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
       res.status(400).json({ sucesso: false, erro: 'Formato de currículo inválido.' });
@@ -125,10 +115,15 @@ export function handleSalvarCurriculo(req: Request, res: Response): void {
 
 /**
  * GET /api/curriculo/meu
- * Retorna o currículo salvo do usuário autenticado (ou sessão/guest) a partir do SQLite.
+ * Retorna o currículo salvo do usuário autenticado a partir do SQLite.
  */
 export function handleObterMeuCurriculo(req: Request, res: Response): void {
   try {
+    if (!req.user?.id) {
+      res.status(401).json({ error: 'Sessão não encontrada ou expirada. Faça login.' });
+      return;
+    }
+
     const ownerKey = resolveOwnerKey(req);
     const stmt = db.prepare('SELECT userId, data, updatedAt FROM curriculos WHERE userId = ? LIMIT 1');
     const row = stmt.get(ownerKey) as CurriculoRow | undefined;
