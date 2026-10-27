@@ -4,8 +4,11 @@ import {
   handleEnviarCandidatura,
   handleListarCandidaturas,
 } from '../controllers/candidaturasController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
+
+router.use(authMiddleware);
 
 router.get('/', handleListarCandidaturas);
 router.post('/', handleEnviarCandidatura);
