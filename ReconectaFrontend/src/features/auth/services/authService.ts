@@ -34,8 +34,8 @@ export async function getSession(signal?: AbortSignal): Promise<SessionUser | nu
       credentials: 'include',
       cache: 'no-store',
       signal: signal
-        ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
-        : AbortSignal.timeout(15000),
+        ? AbortSignal.any([signal, AbortSignal.timeout(35000)])
+        : AbortSignal.timeout(35000),
     });
     if (response.status === 401) return null;
     if (!response.ok) throw new Error('Não foi possível verificar sua sessão. Tente novamente.');

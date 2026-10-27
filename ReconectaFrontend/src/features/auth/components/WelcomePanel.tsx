@@ -15,12 +15,12 @@ export function WelcomePanel(props: ComponentPropsWithoutRef<'section'>) {
           <span /> NOVOS COMEÇOS, TODAS AS IDADES
         </span>
         <h1 id="welcome-title">
-          Sua experiência
+          Sua experiência{' '}
           <br />
-          tem valor.
+          tem valor.{' '}
           <br />
           <span>
-            Seu próximo capítulo
+            Seu próximo capítulo{' '}
             <br />
             começa aqui.
           </span>
